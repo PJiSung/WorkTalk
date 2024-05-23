@@ -1,0 +1,44 @@
+#main{
+    height: 100vh;
+}
+
+.row{
+    display: flex;
+}
+
+.col-md-auto{
+    width: 100%;
+    margin-top: 35vh;
+}
+
+.form-floating{
+    width: 76%;
+    float: left;
+}
+
+.btn-dark{
+    width: 20%;
+    height: 100%;
+    margin-left: 3%;
+}
+
+a{
+    text-decoration-line: none;
+    color: black;
+}
+
+.form-check{
+    width: 76%;
+}
+
+
+
+
+.form-check-label{
+    float: left;
+}
+
+#tags{
+    
+    float: right;
+}

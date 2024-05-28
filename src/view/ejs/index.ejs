@@ -16,28 +16,30 @@
             integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             crossorigin="anonymous"
         />
-        <link href="login.css" rel="stylesheet">
+        <link href="/login.css" rel="stylesheet">
     </head>
 
     <body>
         <header>
             <!-- place navbar here -->
         </header>
-
         <main id="main">
             <div class="container text-center">
                 <div class="row">
                     <div class="col-md-auto">
-                        <form action=""></form>
+                        <form action="/emp/login" method="post">
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="floatingInput">
+                                <input type="text" class="form-control" id="floatingInput" name="empNo">
                                 <label for="floatingInput">사원번호</label>
-                            </div>
+                            </div> 
                             <div class="form-floating">
-                                <input type="password" class="form-control" id="floatingPassword">
+                                <input type="password" class="form-control" id="floatingPassword" name="pwd">
                                 <label for="floatingPassword">비밀번호</label>
-                            </div>
-                            <button type="button" class="btn btn-dark">로그인</button>
+                                <% if (typeof msg !== 'undefined' && msg) { %>
+                                    <p style="color: red; text-align: left;"><%= msg %></p>
+                                <% } %>
+                            </div> 
+                            <button class="btn btn-dark">로그인</button>
                         </form>
                     </div>
                 </div>

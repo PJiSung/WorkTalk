@@ -12,7 +12,7 @@ expressApp.use('/emp', require('./routes/PJS/login.js'));
 expressApp.use(express.static(__dirname + '/public'));
 
 expressApp.get('/', function (req, res) {
-    res.render('index', {msg : req.query.msg})
+    res.render('PJS/enroll')
 })
 
 expressApp.listen(8080, function () {
@@ -24,7 +24,6 @@ require('electron-reload')([
   path.join(__dirname, 'routes')
   
 ], {
-  electron: require(path.join(__dirname, '../node_modules/electron')),
-  awaitWriteFinish: true
+  electron: require(path.join(__dirname, '../node_modules/electron'))
 });
 

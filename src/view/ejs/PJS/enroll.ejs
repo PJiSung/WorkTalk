@@ -1,17 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사원등록</title>
+    <title>사원관리</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .topBar {
+            width: 100%;
+            background-color: #f8f8f8;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 52px);
+            /* topBar 높이를 제외한 높이 */
+        }
+
+        .empList {
+            height: 100%;
+            width: 40%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .formContainer {
+            height: 40%;
+            width: 60%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .leftSection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .leftSection img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid black;
+        }
+
+        .buttonContainer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .rightSection {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 20px;
+        }
+
+        .rightSection table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .rightSection th,
+        .rightSection td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        .bottomTable {
+            width: 60%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin-top: 10px;
+            height: 60%;
+            /* Adjust height as needed */
+        }
+
+        .bottomTable th,
+        .bottomTable td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .rightContainer {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>사원등록2</h1>
-    <form action="/emp/enroll" method="post">
-        <table>
-            <tr><input type="text" name=""></tr>
-            <tr><input type="text" name=""></tr>
+    <div class="topBar">
+        <h1>사원등록</h1>
+    </div>
+    <div class="content">
+        <table class="empList">
+            <tr>
+                <th>1</th>
+                <th>사원번호</th>
+                <th>사원명</th>
+                <th>부서</th>
+                <th>주민번호</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+                <td><input type="text"></td>
+            </tr>
         </table>
-    </form>
+        <div class="rightContainer">
+            <div class="formContainer">
+                <div class="leftSection">
+                    <img src="https://cdn.crowdpic.net/detail-thumb/thumb_d_A16F73BD4E03AEFFE499086BBC0E3CD1.jpg"
+                        width="150" height="200">
+                    <div class="buttonContainer">
+                        <button type="submit">등록</button>
+                        <button type="button">삭제</button>
+                    </div>
+                </div>
+                <form action="/emp/enroll" method="post">
+                    <div class="rightSection">
+                        <table>
+                            <tr>
+                                <td>입사일자 <input type="date" name="entryDate1"></td>
+                                <td>퇴사일자 <input type="date" name="exitDate1"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="department">부서 </label>
+                                    <select id="department" name="department">
+                                        <option value="hr">인사부</option>
+                                        <option value="sales">영업부</option>
+                                        <option value="marketing">마케팅부</option>
+                                        <option value="development">개발부</option>
+                                        <option value="support">고객지원부</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="position">직책 </label>
+                                    <select id="position" name="position">
+                                        <option value="employee">사원</option>
+                                        <option value="assistantManager">대리</option>
+                                        <option value="generalManager">과장</option>
+                                        <option value="teamManager">팀장</option>
+                                        <option value="departmentManager">부장</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="workType">근무형태 </label>
+                                    <select id="workType" name="workType">
+                                        <option value="fulltime">정규직</option>
+                                        <option value="contract">계약직</option>
+                                        <option value="intern">인턴직</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <table class="bottomTable">
+                <tr>
+                    <td>사원명</td>
+                    <td><input type="text" name="name"></td>
+                    <td>생년월일</td>
+                    <td><input type="date" name="birth"></td>
+                    <td>
+                        <label for="gender">성별 </label>
+                        <select id="gender" name="gender">
+                            <option value="male">남자</option>
+                            <option value="female">여자</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>핸드폰 <input type="tel" name="phoneNumber" placeholder="010-1234-5678" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" required></td>
+                    <td>전화번호 <input type="tel" name="homeNumber"></td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        이메일 <input type="text" name="email1"> @
+                        <select id="emailOptions" name="emailOptions">
+                            <option value="naver.com">naver.com</option>
+                            <option value="gmail.com">gmail.com</option>
+                            <option value="yahoo.com">yahoo.com</option>
+                            <option value="hotmail.com">hotmail.com</option>
+                            <option value="outlook.com">outlook.com</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        현주소 <input type="text" id="sample4_postcode" placeholder="우편번호"> <input type="button" onclick="sample4_execDaumPostcode()" value="우편번호 찾기"><br>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="text" id="sample4_roadAddress" placeholder="도로명주소"> <input type="text" id="sample4_jibunAddress" placeholder="지번주소">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="text" id="sample4_detailAddress" placeholder="상세주소">
+                        <input type="text" id="sample4_extraAddress" placeholder="참고항목">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </body>
-</html> 
+
+</html>

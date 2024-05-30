@@ -2,34 +2,54 @@
 body {
     display: flex;
     flex-direction: column;
-    height: 100vh;
     margin: 0;
 }
 
 .topBar {
     width: 100%;
     background-color: #f8f8f8;
-    padding: 10px;
+    padding: 1px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.topBar h3 {
+    margin-left: 1%;
+}
+
 .content {
+    margin-top: 2%;
     display: flex;
     flex: 1;
-    height: calc(100vh - 52px);
-    /* topBar 높이를 제외한 높이 */
+}
+
+.leftContainer {
+    border: 1px solid black;
+    height: 100%;
+    width: 40%;
+    margin-left: 1%;
+    padding: 3px;
 }
 
 .empList {
-    height: 100%;
-    width: 40%;
+    width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
 }
 
+.rightContainer {
+    width: 140%;
+    border: 1px solid black;
+    margin: 1%;
+    padding: 1%;
+    margin-top: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .formContainer {
     height: 40%;
-    width: 60%;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -83,23 +103,14 @@ td {
 }
 
 .bottomTable {
-    width: 60%;
+    width: 95%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-top: 10px;
-    height: 60%;
-    /* Adjust height as needed */
 }
 
 .bottomTable th,
 .bottomTable td {
-    border: 1px solid black;
     padding: 10px;
-    text-align: left;
 }
 
-.rightContainer {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-}

@@ -5,134 +5,217 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사원관리</title>
-    <link href="/login.css" rel="stylesheet">
+    <link href="/enroll.css" rel="stylesheet">
+    <link href="/header.css" rel="stylesheet">
+    <link href="/sidebar.css" rel="stylesheet">
 </head>
 
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    function sample4_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+
+                var roadAddr = data.roadAddress;
+                var extraRoadAddr = '';
+
+                if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                    extraRoadAddr += data.bname;
+                }
+                if (data.buildingName !== '' && data.apartment === 'Y') {
+                    extraRoadAddr += (extraRoadAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                }
+                if (extraRoadAddr !== '') {
+                    extraRoadAddr = ' (' + extraRoadAddr + ')';
+                }
+
+                document.getElementById('sample4_postcode').value = data.zonecode;
+                document.getElementById("sample4_roadAddress").value = roadAddr;
+                document.getElementById("sample4_jibunAddress").value = data.jibunAddress;
+
+                if (roadAddr !== '') {
+                    document.getElementById("sample4_extraAddress").value = extraRoadAddr;
+                } else {
+                    document.getElementById("sample4_extraAddress").value = '';
+                }
+
+                var guideTextBox = document.getElementById("guide");
+                if (data.autoRoadAddress) {
+                    var expRoadAddr = data.autoRoadAddress + extraRoadAddr;
+                    guideTextBox.innerHTML = '(예상 도로명 주소 : ' + expRoadAddr + ')';
+                    guideTextBox.style.display = 'block';
+
+                } else if (data.autoJibunAddress) {
+                    var expJibunAddr = data.autoJibunAddress;
+                    guideTextBox.innerHTML = '(예상 지번 주소 : ' + expJibunAddr + ')';
+                    guideTextBox.style.display = 'block';
+                } else {
+                    guideTextBox.innerHTML = '';
+                    guideTextBox.style.display = 'none';
+                }
+            }
+        }).open();
+    }
+</script>
+
 <body>
-    <div class="topBar">
-        <h1>사원등록</h1>
-    </div>
-    <div class="content">
-        <table class="empList">
-            <tr>
-                <th>1</th>
-                <th>사원번호</th>
-                <th>사원명</th>
-                <th>부서</th>
-                <th>주민번호</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td><input type="text"></td>
-                <td><input type="text"></td>
-                <td><input type="text"></td>
-                <td><input type="text"></td>
-            </tr>
-        </table>
-        <div class="rightContainer">
-            <div class="formContainer">
-                <div class="leftSection">
-                    <img src="https://cdn.crowdpic.net/detail-thumb/thumb_d_A16F73BD4E03AEFFE499086BBC0E3CD1.jpg"
-                        width="150" height="200">
-                    <div class="buttonContainer">
-                        <button type="submit">등록</button>
-                        <button type="button">삭제</button>
-                    </div>
+    <%- include('../../COMMON/header.ejs') %>
+        <%- include('../../COMMON/sidebar.ejs') %>
+            <div id="forSidebar">
+                <div class="topBar">
+                    <h3>사원관리</h>
                 </div>
-                <form action="/emp/enroll" method="post">
-                    <div class="rightSection">
-                        <table>
+                <div class="content">
+                    <div class="leftContainer">
+                        <h4>사원목록</h4>
+                        <table class="empList">
                             <tr>
-                                <td>입사일자 <input type="date" name="entryDate1"></td>
-                                <td>퇴사일자 <input type="date" name="exitDate1"></td>
+                                <td></td>
+                                <td>사원번호</td>
+                                <td>사원명</td>
+                                <td>부서</td>
+                                <td>주민번호</td>
                             </tr>
                             <tr>
-                                <td>
-                                    <label for="department">부서 </label>
-                                    <select id="department" name="department">
-                                        <option value="hr">인사부</option>
-                                        <option value="sales">영업부</option>
-                                        <option value="marketing">마케팅부</option>
-                                        <option value="development">개발부</option>
-                                        <option value="support">고객지원부</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label for="position">직책 </label>
-                                    <select id="position" name="position">
-                                        <option value="employee">사원</option>
-                                        <option value="assistantManager">대리</option>
-                                        <option value="generalManager">과장</option>
-                                        <option value="teamManager">팀장</option>
-                                        <option value="departmentManager">부장</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label for="workType">근무형태 </label>
-                                    <select id="workType" name="workType">
-                                        <option value="fulltime">정규직</option>
-                                        <option value="contract">계약직</option>
-                                        <option value="intern">인턴직</option>
-                                    </select>
-                                </td>
+                                <td><input type="checkbox"></td>
+                                <td>012121212</td>
+                                <td>박지성</td>
+                                <td>인사과</td>
+                                <td>123456-1234567</td>
                             </tr>
                         </table>
                     </div>
-                </form>
+                    <form action="/emp/enroll" method="post">
+                        <input type="hidden" name="picture" value="exam">
+                        <input type="hidden" name="empNo" value="12341234">
+                        <div class="rightContainer">
+                            <div class="formContainer">
+                                <div class="leftSection">
+                                    <img src="https://cdn.crowdpic.net/detail-thumb/thumb_d_A16F73BD4E03AEFFE499086BBC0E3CD1.jpg"
+                                        width="120" height="170">
+                                    <div class="buttonContainer">
+                                        <button type="button">등록</button>
+                                        <button type="button">삭제</button>
+                                    </div>
+                                </div>
+                                <div class="rightSection">
+                                    <table>
+                                        <tr>
+                                            <td>입사일자</td>
+                                            <td><input type="date" name="hireDate" required></td>
+                                            <td>퇴사일자</td>
+                                            <td><input type="date" name="exitDate"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>부서</td>
+                                            <td colspan="3">
+                                                <select id="dept" name="dept" required>
+                                                    <option value="hr">인사부</option>
+                                                    <option value="sales">영업부</option>
+                                                    <option value="marketing">마케팅부</option>
+                                                    <option value="development">개발부</option>
+                                                    <option value="support">고객지원부</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>직책</td>
+                                            <td colspan="3">
+                                                <select id="position" name="position" required>
+                                                    <option value="employee">사원</option>
+                                                    <option value="assistantManager">대리</option>
+                                                    <option value="generalManager">과장</option>
+                                                    <option value="teamManager">팀장</option>
+                                                    <option value="departmentManager">부장</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>근무형태</td>
+                                            <td colspan="3">
+                                                <select id="workType" name="workType" required>
+                                                    <option value="fulltime">정규직</option>
+                                                    <option value="contract">계약직</option>
+                                                    <option value="intern">인턴직</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <table class="bottomTable">
+                                <tr>
+                                    <td>사원명</td>
+                                    <td colspan="3"><input type="text" name="name" required></td>
+                                <tr>
+                                    <td>주민번호</td>
+                                    <td><input type="tel" name="regNumber" pattern="[0-9]{6}-[0-9]{7}" required></td>
+                                    <td>성별</td>
+                                    <td>
+                                        <select id="gender" name="gender">
+                                            <option value="male">남자</option>
+                                            <option value="female">여자</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>핸드폰</td>
+                                    <td colspan="3">
+                                        <input type="tel" name="phoneNumber" pattern="[0-9]{3}" required>
+                                        <input type="tel" name="phoneNumber2" pattern="[0-9]{4}" required>
+                                        <input type="tel" name="phoneNumber3" pattern="[0-9]{4}" required>
+                                    </td>
+                                <tr>
+                                </tr>
+                                <td>전화번호</td>
+                                <td colspan="3">
+                                    <input type="tel" name="homeNumber">
+                                    <input type="tel" name="homeNumber2">
+                                    <input type="tel" name="homeNumber3">
+                                </td>
+                                </tr>
+                                <tr>
+                                    <td>이메일</td>
+                                    <td colspan="3"><input type="text" name="email1" required> @ <input type="text" name="email2" required>
+                                        <select id="emailOptions" name="email">
+                                            <option value="직접입력">직접입력</option>
+                                            <option value="naver.com">naver.com</option>
+                                            <option value="gmail.com">gmail.com</option>
+                                            <option value="yahoo.com">yahoo.com</option>
+                                            <option value="hotmail.com">hotmail.com</option>
+                                            <option value="outlook.com">outlook.com</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>현주소</td>
+                                    <td colspan="3">
+                                        <input type="text" id="sample4_postcode" placeholder="우편번호" required>
+                                        <input type="button" onclick="sample4_execDaumPostcode()" value="우편번호 찾기" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td colspan="3">
+                                        <input type="text" id="sample4_roadAddress" placeholder="도로명주소" required>
+                                        <input type="text" id="sample4_jibunAddress" placeholder="지번주소" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td colspan="3">
+                                        <input type="text" id="sample4_detailAddress" placeholder="상세주소" required>
+                                        <input type="text" id="sample4_extraAddress" placeholder="참고항목" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="4"><input type="submit" value="등록"><input type="reset" value="취소"></th>
+                                </tr>
+                            </table>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <table class="bottomTable">
-                <tr>
-                    <td>사원명</td>
-                    <td><input type="text" name="name"></td>
-                    <td>생년월일</td>
-                    <td><input type="date" name="birth"></td>
-                    <td>
-                        <label for="gender">성별 </label>
-                        <select id="gender" name="gender">
-                            <option value="male">남자</option>
-                            <option value="female">여자</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>핸드폰 <input type="tel" name="phoneNumber" placeholder="010-1234-5678" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" required></td>
-                    <td>전화번호 <input type="tel" name="homeNumber"></td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        이메일 <input type="text" name="email1"> @
-                        <select id="emailOptions" name="emailOptions">
-                            <option value="naver.com">naver.com</option>
-                            <option value="gmail.com">gmail.com</option>
-                            <option value="yahoo.com">yahoo.com</option>
-                            <option value="hotmail.com">hotmail.com</option>
-                            <option value="outlook.com">outlook.com</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        현주소 <input type="text" id="sample4_postcode" placeholder="우편번호"> <input type="button" onclick="sample4_execDaumPostcode()" value="우편번호 찾기"><br>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <input type="text" id="sample4_roadAddress" placeholder="도로명주소"> <input type="text" id="sample4_jibunAddress" placeholder="지번주소">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <input type="text" id="sample4_detailAddress" placeholder="상세주소">
-                        <input type="text" id="sample4_extraAddress" placeholder="참고항목">
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
 </body>
 
 </html>

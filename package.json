@@ -20,7 +20,8 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "30.0.7"
+    "electron": "30.0.7",
+    "electron-prebuilt-compile": "^8.2.0"
   },
   "keywords": [],
   "author": {
@@ -29,6 +30,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@fullcalendar/core": "^6.1.13",
+    "@fullcalendar/daygrid": "^6.1.13",
+    "@fullcalendar/timegrid": "^6.1.13",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",

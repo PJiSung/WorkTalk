@@ -7,9 +7,11 @@ expressApp.use(express.urlencoded({ extended: true }));
 expressApp.use(express.json());
 expressApp.set('view engine', 'ejs');
 expressApp.set('views', './src/view/ejs');
-//expressApp.use('/', require('./routes/KYW/.js'));
+expressApp.use('/hRManage', require('./routes/KYW/resourceMange.js'));
 expressApp.use('/emp', require('./routes/PJS/login.js'));
 expressApp.use(express.static(__dirname + '/public'));
+
+expressApp.use('/static', express.static(path.join(__dirname, 'node_modules')));
 
 expressApp.get('/', function (req, res) {
     res.render('index', {msg : req.query.msg})

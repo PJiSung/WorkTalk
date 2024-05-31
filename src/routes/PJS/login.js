@@ -52,9 +52,10 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/enroll', async (req, res) => {
-    res.render("PJS/enroll")
-    
+router.get('/enroll/:empNo', async (req, res) => {
+    const employees = await Employee.find();
+    const empInfo = await Employee.findOne({empNo : req.params.empNo});
+    res.render("PJS/enroll", {employees, empInfo})
 })
 
 router.post('/enroll', async (req, res) => {

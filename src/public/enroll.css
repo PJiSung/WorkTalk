@@ -5,6 +5,14 @@ body {
     margin: 0;
 }
 
+.enrollDiv {
+    
+}
+
+.empInfoDiv {
+    display: none;
+}
+
 .topBar {
     width: 100%;
     background-color: #f8f8f8;

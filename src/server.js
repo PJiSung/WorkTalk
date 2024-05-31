@@ -14,7 +14,7 @@ expressApp.use(express.static(__dirname + '/public'));
 expressApp.use('/static', express.static(path.join(__dirname, 'node_modules')));
 
 expressApp.get('/', function (req, res) {
-    res.render('PJS/enroll')
+    res.redirect('/emp/enroll/12341234')
     //res.render('index')
 })
 

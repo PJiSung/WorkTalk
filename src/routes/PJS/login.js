@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
                 secure : false,
                 httpOnly : true
             })
-            console.log("성공")
+
             res.render('test')
         } else {
             res.render('index', {msg : "비밀번호가 일치하지 않습니다."})
@@ -61,21 +61,24 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/enroll/:empNo', async (req, res) => {
+router.get('/enroll/:empNo?', async (req, res) => {
 
     const employees = await Employee.find();
-    const empInfo = await Employee.findOne({empNo : req.params.empNo});
+    let empInfo = {};
 
-    console.log(employees)
     //주민번호 복호화
-    let decipher = crypto.createDecipheriv(algorithm, key, iv);
     for(let i=0; i<employees.length; i++){
-        let decrypted = decipher.update(employees[i].regNumber, 'hex', 'utf8');
-        decrypted += decipher.final('utf8');
+        let decipher = crypto.createDecipheriv(algorithm, key, iv);
+        let decrypted = decipher.update(employees[i].regNumber, 'hex', 'utf8') + decipher.final('utf8');
         employees[i].regNumber = decrypted;
+
+        if(employees[i].empNo == req.params.empNo){
+            empInfo = employees[i];
+        }
     }
 
-    res.render("PJS/enroll", {employees, empInfo})
+    if(req.params.empNo) res.render("PJS/enroll", {employees, empInfo})
+    else res.render("PJS/enroll", {employees})
 })
 
 router.post('/enroll', async (req, res) => {
@@ -107,7 +110,11 @@ router.post('/enroll', async (req, res) => {
         outDate: req.body.outDate
     })
     await employee.save();
-    res.redirect("/enroll");
+    res.redirect("/emp/enroll");
+})
+
+router.post('/update', async (req, res) => {
+    console.log("update");
 })
 
 module.exports = router

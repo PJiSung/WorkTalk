@@ -43,7 +43,8 @@ const empSchema = new mongoose.Schema({
     },
     homeNumber: {
         type: String,
-        required: true
+        required: true,
+        default: null
     },
     email: {
         type: String,
@@ -60,7 +61,7 @@ const empSchema = new mongoose.Schema({
     },
     outDate: {
         type: Date,
-        default: "null"
+        default: null
     },
 })
 

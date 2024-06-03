@@ -3,13 +3,6 @@ const expressApp = express()
 const ejs = require('ejs');
 const path = require('path')
 
-const session = require('express-session');
-expressApp.use(session({
-  secret: 'your-secret-key', // 세션 암호화를 위한 키
-  resave: true, // 세션을 항상 저장할 지 여부
-  saveUninitialized: false // 초기화되지 않은 세션을 저장할 지 여부
-}));
-
 expressApp.use(express.urlencoded({ extended: true }));
 expressApp.use(express.json());
 expressApp.set('view engine', 'ejs');

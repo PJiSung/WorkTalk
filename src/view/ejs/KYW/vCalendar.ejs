@@ -9,7 +9,7 @@
   <link href="/static/@fullcalendar/core/main.min.css" rel="stylesheet">
   <link href="/static/@fullcalendar/daygrid/main.min.css" rel="stylesheet">
   <link href="/static/@fullcalendar/timegrid/main.min.css" rel="stylesheet">
-  <link href="/vConfirm.css" rel="stylesheet">
+  <link href="/vCalendar.css" rel="stylesheet">
 </head>
 <body>
   <%- include('../../COMMON/header.ejs') %>
@@ -43,6 +43,7 @@
 
   function moveMonth(){
     document.querySelectorAll('.fc-multimonth-title').forEach(function(item, index){
+      item.style.cursor = 'pointer';
       item.addEventListener('click', function(){
         calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
@@ -53,6 +54,10 @@
         calendar.render();
       })
     })
+  }
+
+  function mouseOver(){ //마우스 오버 구현해야됨
+    document.querySelectorAll('')
   }
   </script>
 </body>

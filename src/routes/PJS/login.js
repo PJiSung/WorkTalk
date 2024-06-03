@@ -81,22 +81,11 @@ router.post('/enroll', async (req, res) => {
     const employee = new Employee({
         empNo,
         pwd: encrypt(req.body.regNumber.split('-')[0], 'bcrypt'),
-        picture,
-        dept,
-        position,
-        workType,
-        name,
+        picture, dept, position, workType, name,
         regNumber: encrypt(req.body.regNumber, 'crypto'),
-        address,
-        phoneNumber,
-        homeNumber,
-        email,
-        status,
-        hireDate,
-        outDate
+        address, phoneNumber, homeNumber, email, status, hireDate, outDate
     })
-    const saveResult = await employee.save();
-    console.log(saveResult)
+    await employee.save();
     res.redirect("/emp/enroll");
 })
 

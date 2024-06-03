@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +8,6 @@
     <link href="/header.css" rel="stylesheet">
     <link href="/sidebar.css" rel="stylesheet">
 </head>
-
 <body>
     <%- include('../../COMMON/header.ejs') %>
         <%- include('../../COMMON/sidebar.ejs') %>
@@ -218,45 +216,11 @@
                             </div>
                         </form>
                     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <!-- 사원정보 div -->
-
                 </div>
             </div>
 </body>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
-
     //다음 주소 API
     const sample6_execDaumPostcode = () => {
         new daum.Postcode({
@@ -323,6 +287,7 @@
             for (let i = 0; i < dept.children.length; i++) {
                 if (dept.children[i].selected == true) deptNo = String(i + 1).padStart(2, '0');
             }
+            console.log(year + deptNo + count)
             empNo.value = year + deptNo + count;
         }
 
@@ -350,11 +315,7 @@
         address += document.getElementById("sample6_detailAddress").value + "@";
         address += document.getElementById("sample6_extraAddress").value;
         document.getElementsByName("address")[0].value = address;
-
-        console.log(document.getElementsByName("address")[0].value)
-        //e.preventDefault();
     })
-
 
     //사원 상세
     document.querySelectorAll("tr[name='empInfo']").forEach(row => {

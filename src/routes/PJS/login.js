@@ -54,21 +54,35 @@ router.post('/login', async (req, res) => {
 
 router.get('/enroll', async (req, res) => {
     res.render("PJS/enroll")
+    
 })
 
 router.post('/enroll', async (req, res) => {
 
-    // 암호화
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(req.body.pwd, salt);
+    // 암호화(비밀번호 변경에서 사용)
+    //const salt = bcrypt.genSaltSync(10);
+    //const hash = bcrypt.hashSync(req.body.pwd, salt);
 
     const employee = new Employee({
         empNo: req.body.empNo,
-        pwd: hash
+        pwd: req.body.regNumber.split('-')[0],
+        picture: req.body.picture,
+        dept: req.body.dept,
+        position: req.body.position,
+        workType: req.body.workType,
+        name: req.body.name,
+        regNumber: req.body.regNumber,
+        address: req.body.address,
+        phoneNumber: req.body.phoneNumber,
+        homeNumber: req.body.homeNumber,
+        email: req.body.email,
+        status: req.body.status,
+        hireDate: req.body.hireDate,
+        outDate: req.body.outDate
     })
 
     await employee.save();
-    res.send(employee);
+    res.redirect("/enroll");
 
 })
 

@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 
-const db = require('../../database.js'); // mongoose 설정 파일 경로에 맞게 변경하세요.
-const user = require('../../models/user.js'); // Employee 모델 파일 경로에 맞게 변경하세요.
+const db = require('../../database.js');
 
 require('dotenv').config();
 

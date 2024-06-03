@@ -15,19 +15,45 @@
   <%- include('../../COMMON/header.ejs') %>
   <%- include('../../COMMON/sidebar.ejs') %>
   <div id="forSidebar">
-    <!-- <div id="calendar"></div> -->
+    <div id="calendar"></div>
   </div>
+  <script src='fullcalendar/dist/index.global.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
   <script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-      var calendarEl = document.getElementById('calendar');
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth'
+    let calendar;
+    let calendarEl = document.getElementById('calendar');
+
+    const firstLender = document.addEventListener('DOMContentLoaded', function() {
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'multiMonthYear',
+        editable: true,
+        selectable: true
       });
       calendar.render();
+
+      moveMonth();
+
+      document.querySelectorAll('.fc-button').forEach((item) => {
+        item.addEventListener('click', function(){
+          moveMonth();
+        })
+      });
     });
 
+  function moveMonth(){
+    document.querySelectorAll('.fc-multimonth-title').forEach(function(item, index){
+      item.addEventListener('click', function(){
+        calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: document.querySelector('h2[id="fc-dom-1"]').innerText + "-" + (parseInt(index + 1) < 10 ? "0" + parseInt(index + 1) : parseInt(index + 1)) + "-01",
+          editable: true,
+          selectable: true
+        });
+        calendar.render();
+      })
+    })
+  }
   </script>
 </body>
 </html>

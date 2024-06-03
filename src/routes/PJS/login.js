@@ -3,6 +3,7 @@ const router = require('express').Router()
 const jwt = require("jsonwebtoken")
 const cookieParser = require("cookie-parser")
 const Employee = require('../../models/employee');
+const bcrypt = require('bcrypt')
 const {encrypt, decrypt, convertDate} = require('./functions')
 
 router.post('/login', async (req, res) => {

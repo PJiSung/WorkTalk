@@ -31,6 +31,7 @@
   height: calc(100vh - 60px);
   position: fixed;
   background-color: grey;
+  z-index: 1000;
 }
 
 .sidebar2 a{
@@ -45,4 +46,3 @@
   padding: 10px;
   cursor: pointer;
 }
-

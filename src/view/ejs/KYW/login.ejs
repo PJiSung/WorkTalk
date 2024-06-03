@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <link href="/header.css" rel="stylesheet">
-  <link href="/sidebar.css" rel="stylesheet">
 </head>
 <body>
-  <%- include('../../COMMON/header.ejs') %>
-  <%- include('../../COMMON/sidebar.ejs') %>
+  <form action="/hRManage/forLogin" method="post">
+    <input type="text" name="id">
+    <input type="text" name="pw">
+    <button>로그인</button>
+  </form>
 </body>
 </html>

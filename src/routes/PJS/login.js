@@ -1,18 +1,9 @@
 require('dotenv').config();
 const router = require('express').Router()
 const jwt = require("jsonwebtoken")
-const bcrypt = require('bcrypt')
 const cookieParser = require("cookie-parser")
-const crypto = require('crypto');
 const Employee = require('../../models/employee');
-const { takeHeapSnapshot } = require('process');
-
-const algorithm = process.env.ALGORITHM;
-const key = Buffer.from(process.env.KEY, 'base64');
-const iv = Buffer.from(process.env.IV, 'base64')
-
-//const key = crypto.randomBytes(32).toString('base64');
-//const iv = crypto.randomBytes(16).toString('base64');
+const {encrypt, decrypt, convertDate} = require('./functions')
 
 router.post('/login', async (req, res) => {
 
@@ -65,56 +56,84 @@ router.get('/enroll/:empNo?', async (req, res) => {
 
     const employees = await Employee.find();
     let empInfo = {};
-
+    let date = {};
+    
     //주민번호 복호화
     for(let i=0; i<employees.length; i++){
-        let decipher = crypto.createDecipheriv(algorithm, key, iv);
-        let decrypted = decipher.update(employees[i].regNumber, 'hex', 'utf8') + decipher.final('utf8');
-        employees[i].regNumber = decrypted;
+        employees[i].regNumber = decrypt(employees[i].regNumber).substring(0, 8) + '******';
 
         if(employees[i].empNo == req.params.empNo){
             empInfo = employees[i];
+            date.hireDate = convertDate(employees[i].hireDate);
+            date.outDate = convertDate(employees[i].outDate);
         }
     }
 
-    if(req.params.empNo) res.render("PJS/enroll", {employees, empInfo})
+    if(req.params.empNo) res.render("PJS/enroll", {employees, empInfo, date})
     else res.render("PJS/enroll", {employees})
+
 })
 
 router.post('/enroll', async (req, res) => {
 
-    //비밀번호 암호화(단방향)
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(req.body.regNumber.split('-')[0], salt);
-
-    //주민번호 암호화(양방향)
-    let cipher = crypto.createCipheriv(algorithm, key, iv);
-    let encrypted = cipher.update(req.body.regNumber, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
+    const { empNo, picture, dept, position, workType, name, address, phoneNumber, homeNumber, email, status, hireDate, outDate } = req.body;
 
     const employee = new Employee({
-        empNo: req.body.empNo,
-        pwd: hash,
-        picture: req.body.picture,
-        dept: req.body.dept,
-        position: req.body.position,
-        workType: req.body.workType,
-        name: req.body.name,
-        regNumber: encrypted,
-        address: req.body.address,
-        phoneNumber: req.body.phoneNumber,
-        homeNumber: req.body.homeNumber,
-        email: req.body.email,
-        status: req.body.status,
-        hireDate: req.body.hireDate,
-        outDate: req.body.outDate
+        empNo,
+        pwd: encrypt(req.body.regNumber.split('-')[0], 'bcrypt'),
+        picture,
+        dept,
+        position,
+        workType,
+        name,
+        regNumber: encrypt(req.body.regNumber, 'crypto'),
+        address,
+        phoneNumber,
+        homeNumber,
+        email,
+        status,
+        hireDate,
+        outDate
     })
-    await employee.save();
+    const saveResult = await employee.save();
+    console.log(saveResult)
     res.redirect("/emp/enroll");
 })
 
 router.post('/update', async (req, res) => {
-    console.log("update");
+
+    const updateEmpInfo = req.body;
+    const existingEmpInfo = await Employee.findOne({empNo : req.body.empNo});
+    let updateColumn = {};
+
+    const empInfoKeys = Object.keys(updateEmpInfo);
+    if(convertDate(existingEmpInfo.hireDate) == updateEmpInfo.hireDate){
+        empInfoKeys.splice(empInfoKeys.indexOf('hireDate'), 1);
+    }
+    if((existingEmpInfo.outDate != null && updateEmpInfo.outDate == '') || convertDate(existingEmpInfo.outDate) == updateEmpInfo.outDate){
+        empInfoKeys.splice(empInfoKeys.indexOf('outDate'), 1);
+    }
+    if(updateEmpInfo.regNumber.includes('*')){
+        empInfoKeys.splice(empInfoKeys.indexOf('regNumber'), 1);
+    }else{
+        updateEmpInfo.regNumber = encrypt(updateEmpInfo.regNumber, 'crypto');
+    }
+    empInfoKeys.splice(empInfoKeys.indexOf('empNo'), 1);
+
+    for(let i=0; i<empInfoKeys.length; i++){
+        const key = empInfoKeys[i];
+        if(updateEmpInfo[key] != existingEmpInfo[key]) updateColumn[key] = updateEmpInfo[key]
+    }
+    
+    if(updateColumn != null){
+        const updateResult = await Employee.findOneAndUpdate(
+            {empNo : req.body.empNo},
+            {$set : updateColumn},
+            {new : true},
+        )
+        if(updateResult) res.redirect("/emp/enroll/" + req.body.empNo);
+        else res.status(404).send("update fail")
+    }
 })
 
 module.exports = router

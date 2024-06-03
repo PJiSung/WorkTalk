@@ -41,7 +41,7 @@
                                         <%= employee.dept %>
                                     </td>
                                     <td>
-                                        <%= employee.regNumber.substring(0, 8) %>******
+                                        <%= employee.regNumber %>
                                     </td>
                                 </tr>
                                 <% }) %>
@@ -52,7 +52,7 @@
                     <div class="enrollDiv">
                             <form action="<%= typeof empInfo !== 'undefined' ? '/emp/update' : '/emp/enroll' %>" method="post" id="enrollForm">
                             <input type="hidden" name="picture" value="exam">
-                            <input type="hidden" name="empNo">
+                            <input type="hidden" name="empNo" value="<%= typeof empInfo !== 'undefined' ? empInfo.empNo : '' %>">
                             <input type="hidden" name="address">
                             <div class="rightContainer">
                                 <div class="formContainer">
@@ -68,9 +68,9 @@
                                         <table>
                                             <tr>
                                                 <td>입사일자</td>
-                                                <td><input type="date" name="hireDate" required></td>
+                                                <td><input type="date" name="hireDate" value="<%= typeof empInfo !== 'undefined' ? date.hireDate : '' %>" required></td>
                                                 <td>퇴사일자</td>
-                                                <td><input type="date" name="outDate"></td>
+                                                <td><input type="date" name="outDate" value="<%= typeof empInfo !== 'undefined' ? date.outDate : '' %>"></td>
                                             </tr>
                                             <tr>
                                                 <td>부서</td>
@@ -119,7 +119,7 @@
                                         <td>주민번호</td>
                                         <td>
                                             <% if (typeof empInfo !== 'undefined') { %>
-                                                <input type="tel" name="regNumber" value="<%= empInfo.regNumber.substring(0, 8) + '******' %>" required>
+                                                <input type="tel" name="regNumber" value="<%= empInfo.regNumber %>" required>
                                             <% } else { %>
                                                 <input type="tel" name="regNumber" pattern="[0-9]{6}-[0-9]{7}" required>
                                             <% } %>
@@ -127,7 +127,7 @@
                                         </td>
                                         <td>성별</td>
                                         <td>
-                                            <select id="gender" name="gender">
+                                            <select id="gender">
                                                 <option value="male" <%= typeof empInfo !== 'undefined' && ['1', '3'].includes(empInfo.regNumber[7])
                                                     ? 'selected' : '' %>>남자</option>
                                                 <option value="female" <%= typeof empInfo !== 'undefined' && ['2', '4'].includes(empInfo.regNumber[7])
@@ -309,20 +309,22 @@
         }
     })
 
-    //사원등록
-    document.getElementById("enrollForm").addEventListener('submit', () => {
+    //submit 이전 실행함수
+    document.getElementById("enrollForm").addEventListener('submit', (e) => {
 
         //사원번호 생성
-        const empNo = document.querySelector("input[name='empNo']");
-        const year = new Date().getFullYear();
-        let deptNo = "";
-        const count = "<%= employees.length + 1 %>".padStart(3, '0');
-
-        const dept = document.querySelector("select[name='dept']");
-        for (let i = 0; i < dept.children.length; i++) {
-            if (dept.children[i].selected == true) deptNo = String(i + 1).padStart(2, '0');
+        if(e.target.action.split('emp/')[1] == 'enroll') {
+            const empNo = document.querySelector("input[name='empNo']");
+            const year = new Date().getFullYear();
+            let deptNo = "";
+            const count = "<%= employees.length + 1 %>".padStart(3, '0');
+    
+            const dept = document.querySelector("select[name='dept']");
+            for (let i = 0; i < dept.children.length; i++) {
+                if (dept.children[i].selected == true) deptNo = String(i + 1).padStart(2, '0');
+            }
+            empNo.value = year + deptNo + count;
         }
-        empNo.value = year + deptNo + count;
 
         //핸드폰,전화번호,이메일 통합
         const phoneNumber = document.querySelector("input[name='phoneNumber']");
@@ -348,7 +350,11 @@
         address += document.getElementById("sample6_detailAddress").value + "@";
         address += document.getElementById("sample6_extraAddress").value;
         document.getElementsByName("address")[0].value = address;
+
+        console.log(document.getElementsByName("address")[0].value)
+        //e.preventDefault();
     })
+
 
     //사원 상세
     document.querySelectorAll("tr[name='empInfo']").forEach(row => {

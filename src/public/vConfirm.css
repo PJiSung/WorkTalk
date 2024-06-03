@@ -1,0 +1,5 @@
+#calendar {
+  max-height: calc(100vh - 60px);
+  padding: 5px;
+  z-index: 1 !important;
+}

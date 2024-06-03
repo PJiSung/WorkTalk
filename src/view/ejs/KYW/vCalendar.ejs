@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="/header.css" rel="stylesheet">
+  <link href="/sidebar.css" rel="stylesheet">
+  <link href="/static/@fullcalendar/core/main.min.css" rel="stylesheet">
+  <link href="/static/@fullcalendar/daygrid/main.min.css" rel="stylesheet">
+  <link href="/static/@fullcalendar/timegrid/main.min.css" rel="stylesheet">
+  <link href="/vConfirm.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../../COMMON/header.ejs') %>
+  <%- include('../../COMMON/sidebar.ejs') %>
+  <div id="forSidebar">
+    <!-- <div id="calendar"></div> -->
+  </div>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth'
+      });
+      calendar.render();
+    });
+
+  </script>
+</body>
+</html>

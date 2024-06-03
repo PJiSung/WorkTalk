@@ -33,6 +33,7 @@
     "@fullcalendar/core": "^6.1.13",
     "@fullcalendar/daygrid": "^6.1.13",
     "@fullcalendar/timegrid": "^6.1.13",
+    "@syncfusion/ej2-schedule": "^25.2.6",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
@@ -40,9 +41,12 @@
     "electron-reload": "^2.0.0-alpha.1",
     "electron-squirrel-startup": "^1.0.1",
     "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "fullcalendar": "^6.1.13",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "tui-calendar": "^1.15.3"
   }
 }

@@ -6,7 +6,7 @@
     <div class="sidebar-item1">단체방</div>
   </div>
   <div class="sidebar2">
-    <a href=""><div class="sidebar-item2">채팅</div></a>
+    <a href="/hRManage/myChatList"><div class="sidebar-item2">채팅</div></a>
     <div class="sidebar-item2" id="makeRoom">단체 채팅방 생성</div>
     <div class="sidebar-item2">부서별 사원</div>
   </div>
@@ -16,25 +16,33 @@
 
   document.body.addEventListener('click',() =>{
     userClick = event.target;
-    if(event.target !== document.querySelector("div[id='makeRoom']")) closeNewDiv()
+    if(event.target !== document.querySelector("div[id='makeRoom']") && !Array.from(document.querySelectorAll('.group')).some(function(element) {
+        return element === event.target;                             //class = group인걸 nodeList로 변환후 some 메서드를 사용하여 event.target이 .group 클래스를 가진 요소 중 하나인지 확인 후 리턴
+    })) {
+      closeNewDiv();
+    }
   })
 
   document.querySelector("div[id='makeRoom']").addEventListener('click', ()=>{
-    const newDiv = document.createElement('div');
-    newDiv.id = "group";
-    newDiv.innerHTML = "단체방 초대 <hr> 초대 인원 선택 <br> <div>asdasd</div>"
-    newDiv.style.background = 'black';
-    newDiv.style.color = 'white';
-    newDiv.style.position = 'fixed';
-    newDiv.style.left = '170px';
-    newDiv.style.width = '200px';
-    newDiv.style.borderRadius = '5%';
-    document.querySelector("div[id='makeRoom']").appendChild(newDiv);
+    if(!document.querySelector("div[class='group']")){
+      const newDiv = document.createElement('div');
+      newDiv.className = "group";
+      newDiv.innerHTML = "단체방 초대 <hr class='group'> 초대 인원 선택 <br> <div class='group'>asdasd</div>"
+      newDiv.style.background = 'black';
+      newDiv.style.color = 'white';
+      newDiv.style.position = 'fixed';
+      newDiv.style.left = '170px';
+      newDiv.style.width = '200px';
+      newDiv.style.borderRadius = '5%';
+      newDiv.style.zIndex = 9999;
+      document.querySelector("div[id='makeRoom']").appendChild(newDiv);
+    }
   })
 
   function closeNewDiv(){
-    if(document.querySelector("div[id='group']")){
-      document.querySelector("div[id='group']").parentNode.removeChild(document.querySelector("div[id='group']"));
+    const group = document.querySelector("div[class='group']");
+    if(group){
+      group.parentNode.removeChild(group);
     }
   }
 </script>

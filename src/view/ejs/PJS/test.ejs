@@ -49,13 +49,13 @@
                     <!-- 사원등록 div -->
                     <div class="enrollDiv">
                             <form action="<%= typeof empInfo !== 'undefined' ? '/emp/update' : '/emp/enroll' %>" method="post" id="enrollForm" enctype="multipart/form-data"> 
-                            <input type="hidden" name="empNo" value="<%= typeof empInfo !== 'undefined' ? empInfo.empNo : '' %>">
-                            <span style="visibility: hidden;"><input type="file" name="picture" accept="image/*"></span>
+                                <input type="hidden" name="empNo" value="<%= typeof empInfo !== 'undefined' ? empInfo.empNo : '' %>">
+                                <input type="file" name="picture" required>
                             <input type="hidden" name="address">
                             <div class="rightContainer">
                                 <div class="formContainer">
                                     <div class="leftSection">
-                                        <img src="<%= typeof empInfo !== 'undefined' ? '/upload/'+empInfo.picture : 'https://cdn.crowdpic.net/detail-thumb/thumb_d_A16F73BD4E03AEFFE499086BBC0E3CD1.jpg' %>"
+                                        <img src="<%= typeof empInfo !== 'undefined' ? empInfo.picture : 'https://cdn.crowdpic.net/detail-thumb/thumb_d_A16F73BD4E03AEFFE499086BBC0E3CD1.jpg' %>"
                                             width="120" height="170" id="profileImg">
                                         <div class="buttonContainer">
                                             <button type="button" id="uploadImgBtn">등록</button>
@@ -66,14 +66,14 @@
                                         <table>
                                             <tr>
                                                 <td>입사일자</td>
-                                                <td><input type="date" name="hireDate" value="<%= typeof empInfo !== 'undefined' ? date.hireDate : '' %>" required></td>
+                                                <td><input type="date" name="hireDate" value="<%= typeof empInfo !== 'undefined' ? date.hireDate : '2024-06-04' %>" ></td>
                                                 <td>퇴사일자</td>
                                                 <td><input type="date" name="outDate" value="<%= typeof empInfo !== 'undefined' ? date.outDate : '' %>"></td>
                                             </tr>
                                             <tr>
                                                 <td>부서</td>
                                                 <td colspan="3">
-                                                    <select id="dept" name="dept" required>
+                                                    <select id="dept" name="dept" >
                                                         <option value="인사부" <%= typeof empInfo !== 'undefined' && empInfo.dept == '인사부' ? 'selected' : '' %>>인사부</option>
                                                         <option value="영업부" <%= typeof empInfo !== 'undefined' && empInfo.dept == '영업부' ? 'selected' : '' %>>영업부</option>
                                                         <option value="마케팅부" <%= typeof empInfo !== 'undefined' && empInfo.dept == '마케팅부' ? 'selected' : '' %>>마케팅부</option>
@@ -85,7 +85,7 @@
                                             <tr>
                                                 <td>직책</td>
                                                 <td colspan="3">
-                                                    <select id="position" name="position" required>
+                                                    <select id="position" name="position" >
                                                         <option value="사원" <%= typeof empInfo !== 'undefined' && empInfo.position == '사원' ? 'selected' : '' %>>사원</option>
                                                         <option value="대리" <%= typeof empInfo !== 'undefined' && empInfo.position == '대리' ? 'selected' : '' %>>대리</option>
                                                         <option value="과장" <%= typeof empInfo !== 'undefined' && empInfo.position == '과장' ? 'selected' : '' %>>과장</option>
@@ -97,7 +97,7 @@
                                             <tr>
                                                 <td>근무형태</td>
                                                 <td colspan="3">
-                                                    <select id="workType" name="workType" required>
+                                                    <select id="workType" name="workType" >
                                                         <option value="정규직" <%= typeof empInfo !== 'undefined' && empInfo.workType == '정규직' ? 'selected' : '' %>>정규직</option>
                                                         <option value="계약직" <%= typeof empInfo !== 'undefined' && empInfo.workType == '계약직' ? 'selected' : '' %>>계약직</option>
                                                         <option value="인턴직" <%= typeof empInfo !== 'undefined' && empInfo.workType == '인턴직' ? 'selected' : '' %>>인턴직</option>
@@ -112,22 +112,24 @@
                                         <td>사원명</td>
                                         <td colspan="3"><input type="text" name="name"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.name : '' %>"
-                                                required></td>
+                                                ></td>
                                     <tr>
                                         <td>주민번호</td>
                                         <td>
                                             <% if (typeof empInfo !== 'undefined') { %>
-                                                <input type="tel" name="regNumber" value="<%= empInfo.regNumber %>" required>
+                                                <input type="tel" name="regNumber" value="<%= empInfo.regNumber %>" >
                                             <% } else { %>
-                                                <input type="tel" name="regNumber" pattern="[0-9]{6}-[0-9]{7}" required>
+                                                <input type="tel" name="regNumber" pattern="[0-9]{6}-[0-9]{7}" >
                                             <% } %>
                                             
                                         </td>
                                         <td>성별</td>
-                                        <td>   
+                                        <td>
                                             <select id="gender">
-                                                <option value="male" <%= typeof empInfo !== 'undefined' && ['1', '3'].includes(empInfo.regNumber[7]) ? 'selected' : '' %>>남자</option>
-                                                <option value="female" <%= typeof empInfo !== 'undefined' && ['2', '4'].includes(empInfo.regNumber[7]) ? 'selected' : '' %>>여자</option>
+                                                <option value="male" <%= typeof empInfo !== 'undefined' && ['1', '3'].includes(empInfo.regNumber[7])
+                                                    ? 'selected' : '' %>>남자</option>
+                                                <option value="female" <%= typeof empInfo !== 'undefined' && ['2', '4'].includes(empInfo.regNumber[7])
+                                                    ? 'selected' : '' %>>여자</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -137,13 +139,13 @@
                                             <input type="hidden" name="phoneNumber">
                                             <input type="tel" pattern="[0-9]{3}"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.phoneNumber.split('-')[0] : '' %>"
-                                                required>
+                                                >
                                             <input type="tel" pattern="[0-9]{4}"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.phoneNumber.split('-')[1] : '' %>"
-                                                required>
+                                                >
                                             <input type="tel" pattern="[0-9]{4}"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.phoneNumber.split('-')[2] : '' %>"
-                                                required>
+                                                >
                                         </td>
                                     <tr>
                                     </tr>
@@ -164,9 +166,9 @@
                                             <input type="hidden" name="email">
                                             <input type="text"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.email.split('@')[0] : '' %>"
-                                                required> @ <input type="text"
+                                                > @ <input type="text"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.email.split('@')[1] : '' %>"
-                                                required>
+                                                >
                                             <select id="emailOptions">
                                                 <option value="직접입력">직접입력</option>
                                                 <option value="naver.com">naver.com</option>
@@ -182,9 +184,9 @@
                                         <td colspan="3">
                                             <input type="text" id="sample6_postcode" placeholder="우편번호"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.address.split('@')[0] : '' %>"
-                                                required>
+                                                >
                                             <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"
-                                                required>
+                                                >
                                         </td>
                                     </tr>
                                     <tr>
@@ -192,7 +194,7 @@
                                         <td colspan="3">
                                             <input type="text" id="sample6_address" placeholder="주소"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.address.split('@')[1] : '' %>"
-                                                required>
+                                                >
                                         </td>
                                     </tr>
                                     <tr>
@@ -200,10 +202,10 @@
                                         <td colspan="3">
                                             <input type="text" id="sample6_detailAddress" placeholder="상세주소"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.address.split('@')[2] : '' %>"
-                                                required>
+                                                >
                                             <input type="text" id="sample6_extraAddress" placeholder="참고항목"
                                                 value="<%= typeof empInfo !== 'undefined' ? empInfo.address.split('@')[3] : '' %>"
-                                                required>
+                                                >
                                         </td>
                                     </tr>
                                     <tr>
@@ -324,8 +326,9 @@
 
     //사진등록 버튼
     document.getElementById("uploadImgBtn").addEventListener('click', () => {
-
+        console.log("버튼클릭")
         const inputFile = document.querySelector('input[name="picture"]');
+        inputFile.accept = 'image/*'
         inputFile.click();
 
         inputFile.addEventListener('change', (e) => {
@@ -335,11 +338,7 @@
 
     //사진삭제 버튼
     document.getElementById("deleteImgBtn").addEventListener('click', () => {
-        
-        document.querySelector('input[name="picture"]').value = '';
-
-        //임시
-        document.getElementById('profileImg').src = 'https://cdn.crowdpic.net/detail-thumb/thumb_d_A16F73BD4E03AEFFE499086BBC0E3CD1.jpg';
+        console.log("사진삭제")
     })
 </script>
 

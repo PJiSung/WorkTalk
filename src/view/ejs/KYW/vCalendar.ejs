@@ -14,51 +14,200 @@
 <body>
   <%- include('../../COMMON/header.ejs') %>
   <%- include('../../COMMON/sidebar.ejs') %>
+
   <div id="forSidebar">
     <div id="calendar"></div>
   </div>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="forCenter" id="modalHead">휴가 신청서</div>
+      <form action="">
+        <div>
+          휴가 종류 :
+          <select id="selectZone">
+            <option class="forCenter options" value="annual">연차</option>
+            <option class="forCenter options" value="sick">병가</option>
+            <option class="forCenter options" value="parenting">육아</option>
+            <option class="forCenter options" value="event">경조사</option>
+          </select>
+          <span style="margin-left: 55%;">휴가 시작일 <input id="inputStr" type="date"> </span> <span style="margin-left: 5%;">휴가 종료일 <input id="inputEnd" type="date"> </span></div>
+          
+        
+        <textarea placeholder="휴가 사유를 입력해주세요" rows="45"></textarea>
+        <div id="bZone">
+          <button id="sButton" type="button" onclick="signUp();"> 신청 </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src='fullcalendar/dist/index.global.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
   <script>
-
     let calendar;
     let calendarEl = document.getElementById('calendar');
+    let nowDate = new Date();
+    let selectStart = null;
+    let selectEnd = null
 
-    const firstLender = document.addEventListener('DOMContentLoaded', function() {
-      calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'multiMonthYear',
-        editable: true,
-        selectable: true
-      });
-      calendar.render();
+    const inputStr = document.querySelector('input[id="inputStr"]');
+    const inputEnd = document.querySelector('input[id="inputEnd"]');
+    const reason = document.querySelector('textarea');
 
-      moveMonth();
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("openModalBtn");
+    var span = document.getElementsByClassName("close")[0];
 
-      document.querySelectorAll('.fc-button').forEach((item) => {
-        item.addEventListener('click', function(){
-          moveMonth();
-        })
-      });
+    document.addEventListener('DOMContentLoaded', function() {
+      createAllCal();
+
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
+      inputStr.min = changeDate("min");
+      inputEnd.min = changeDate("min");
+
+      inputStr.addEventListener('change', ()=>{
+        if(inputStr.value > inputEnd.value){
+          inputStr.value = inputEnd.value;
+          alert("휴가 시작일이 휴가 종료일보다 빨라야합니다");
+        }
+      })
+
+      inputEnd.addEventListener('change', ()=>{
+        if(inputStr.value > inputEnd.value){
+          inputStr.value = inputEnd.value;
+          alert("휴가 시작일이 휴가 종료일보다 빨라야합니다");
+        }
+      })
     });
 
-  function moveMonth(){
-    document.querySelectorAll('.fc-multimonth-title').forEach(function(item, index){
-      item.style.cursor = 'pointer';
-      item.addEventListener('click', function(){
-        calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          initialDate: document.querySelector('h2[id="fc-dom-1"]').innerText + "-" + (parseInt(index + 1) < 10 ? "0" + parseInt(index + 1) : parseInt(index + 1)) + "-01",
-          editable: true,
-          selectable: true
-        });
-        calendar.render();
-      })
-    })
-  }
+    function createAllCal(){
+      clearSelectDate();
+      calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+          left: 'prev',
+          center: 'title',
+          right: 'customButton next'
+        },
+        customButtons: {
+          customButton: {
+            text: '휴가 신청',
+            click: function() {
+              vRequest();
+            }
+          }
+        },
+        initialView: 'multiMonthYear',
+        editable: true,
+        selectable: true,
+        select: function(info) {
+          if (selectStart === null) {
+            selectStart = info.start;
+          } else if (selectEnd === null) {
+            selectEnd = info.end;
+            coverRange(selectStart, selectEnd);
+          }else if(selectStart !== null){
+            clearRange();
+            selectStart = info.start;
+          }
+        },
+        unselectAuto: false,
+        selectAllow: function(selectInfo) {
+          return selectInfo.start > nowDate;
+        },
+      });
+      calendar.render();
+    }
 
-  function mouseOver(){ //마우스 오버 구현해야됨
-    document.querySelectorAll('')
-  }
+    function coverRange(start, end) {
+      if(start > end){
+        let temp = start;
+        start = end;
+        end = temp;
+        start = new Date(start.getTime() - 86400000);
+        end = new Date(end.getTime() + 86400000);
+      }
+
+      const days = document.querySelectorAll('.fc-daygrid-day');
+      days.forEach(day => {
+        const date = new Date(day.getAttribute('data-date'));
+        if (date >= start && date <= end) {
+          day.classList.add('fc-selected-range');
+        }
+      });
+    }
+
+    function vRequest(){
+      if (selectStart && selectEnd) {
+        if(selectStart > selectEnd){
+          let forChangeStart = new Date(selectStart.getTime() + 86400000);
+          selectStart = selectEnd;
+          selectEnd = forChangeStart;
+        }else if(selectStart < selectEnd){
+          selectStart = new Date(selectStart.getTime() + 86400000)
+        }
+
+        modal.style.display = 'block';
+        const start = inputStr.value = changeDate(new Date(selectStart.getTime() - 86400000));
+        const start1 = inputEnd.value = changeDate(new Date(selectEnd.getTime() - 86400000));
+      } else if(!selectStart){
+        alert('휴가 시작 날짜를 지정해주세요.');
+      }else if(!selectEnd){
+        alert('휴가 종료 날짜를 지정해주세요.');
+      }
+    }
+
+    function clearRange(){
+      const days = document.querySelectorAll('.fc-daygrid-day');
+      days.forEach(day => {
+        if(day.classList.contains('fc-selected-range')){
+          day.classList.remove('fc-selected-range');
+        }
+      });
+      clearSelectDate();
+    }
+
+    function clearSelectDate(){
+      selectStart = null;
+      selectEnd = null;
+    }
+
+    function changeDate(date){
+      if(date === "min"){
+        const today = new Date();
+        const tomorrow = new Date(today);
+        date = new Date(tomorrow.setDate(today.getDate() + 1));
+      }
+      const year = date.getFullYear();
+      const month = ("0" + (date.getMonth() + 1)).slice(-2);
+      const day = ("0" + date.getDate()).slice(-2);
+      return `${year}-${month}-${day}`;
+    }
+
+    function signUp(){
+      if(reason.value !== ''){
+        fetch('/hRManage/vRequest',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({startDate: inputStr.value, endDate: inputEnd.value, reason: reason.value, kind: document.querySelector('select').value})
+        }).then(response => response.json())
+          .then(data => console.log(data))
+          .catch(error => console.error('Error:', error));
+      }
+    }
+
   </script>
 </body>
 </html>

@@ -3,3 +3,82 @@
   padding: 5px;
   z-index: 1 !important;
 }
+
+.fc-day-past {
+  color: rgba(205, 205, 205, 0.7);
+  background-color: rgba(241, 241, 241, 1);
+}
+.fc-selected-range {
+  background-color: rgba(0, 0, 255, 0.1);
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1; 
+  padding-top: 100px; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgb(0,0,0); 
+  background-color: rgba(0,0,0,0.4); 
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 0 0 0 300px;
+  padding: 20px;
+  border: 1px solid #888;
+  border-radius: 15px;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+textarea{
+  resize: none;
+  width: 100%;
+}
+
+#modalHead{
+  text-align: center;
+  font-size: xx-large;
+  font-weight: 1000;
+}
+
+.forCenter{
+  text-align: center;
+}
+
+#selectZone{
+  width: 5%;
+  min-height: 30px;
+  border-radius: 10px;
+  margin: 2% 0 2% 0;
+}
+
+#bZone{
+  text-align: right;
+  margin-top: 1%;
+}
+
+#sButton{
+  border-radius: 15%;
+  background-color: rgba(44, 62, 80, 1);
+  color: white;
+  padding: 10px;
+}

@@ -29,15 +29,9 @@ router.get('/newEnroll', (req, res) => {
     res.render('KYW/enroll.ejs')
 });
 
-router.post('/forLogin', async (req, res) => {
-    console.log(req.body)
-    const loginUser = await user.findOne({id: req.body.id, pw : req.body.pw});
-
-    req.session.user = {
-        id: loginUser.id,
-    };
-
-    res.render('KYW/applicate.ejs')
+router.post('/vRequest', (req, res) =>{
+    console.log(req.body);
+    console.log(123);
 });
 
 

@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
                 httpOnly: true
             })
 
-            res.render('test')
+            res.render('KYW/vCalendar.ejs')
         } else {
             res.render('index', { msg: "비밀번호가 일치하지 않습니다." })
         }

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const empSchema = new mongoose.Schema({
     empNo: {
-        type: Number,
+        type: String,
         required: true,
     },
     pwd: {

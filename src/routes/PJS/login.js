@@ -69,9 +69,17 @@ router.post('/login', async (req, res) => {
 
 router.get('/enroll/:empNo?', async (req, res) => {
 
-    const employees = await Employee.find();
+    let { column, value } = req.query;
+    let employees = {};
     let empInfo = {};
     let date = {};
+    if(typeof column != 'undefined') {
+        if(column == 'empNo') value = parseInt(value);
+        employees = await Employee.find({ [column] : { $regex : value }, status : 'Y'});
+    }
+    else employees = await Employee.find({status: 'Y'});
+
+
     //주민번호 복호화
     for (let i = 0; i < employees.length; i++) {
         employees[i].regNumber = decrypt(employees[i].regNumber).substring(0, 8) + '******';
@@ -84,9 +92,6 @@ router.get('/enroll/:empNo?', async (req, res) => {
 
     if (req.params.empNo) res.render("PJS/enroll", { employees, empInfo, date })
     else res.render("PJS/enroll", { employees })
-    // if (req.params.empNo) res.render("PJS/test", { employees, empInfo, date })
-    // else res.render("PJS/test", { employees })
-
 })
 
 router.post('/enroll', upload.single('picture'), async (req, res) => {
@@ -119,11 +124,10 @@ router.post('/update', upload.single('picture'), async (req, res) => {
     if ((existingEmpInfo.outDate != null && updateEmpInfo.outDate == '') || convertDate(existingEmpInfo.outDate) == updateEmpInfo.outDate) {
         empInfoKeys.splice(empInfoKeys.indexOf('outDate'), 1);
     }
-    if (updateEmpInfo.regNumber.includes('*')) {
-        empInfoKeys.splice(empInfoKeys.indexOf('regNumber'), 1);
-    } else {
-        updateEmpInfo.regNumber = encrypt(updateEmpInfo.regNumber, 'crypto');
+    if (!updateEmpInfo.regNumber.includes('*')) {
+        updateColumn.regNumber = encrypt(updateEmpInfo.regNumber, 'crypto');
     }
+    empInfoKeys.splice(empInfoKeys.indexOf('regNumber'), 1);
     empInfoKeys.splice(empInfoKeys.indexOf('empNo'), 1);
     empInfoKeys.splice(empInfoKeys.indexOf('picture'), 1);
 
@@ -148,6 +152,17 @@ router.post('/update', upload.single('picture'), async (req, res) => {
         if (updateResult) res.redirect("/emp/enroll/" + req.body.empNo);
         else res.status(404).send("update fail")
     }
+})
+
+router.get('/deleteEmp/:empNo', async (req, res) => {
+
+    const deleteResult = await Employee.findOneAndUpdate(
+        { empNo: req.params.empNo },
+        { $set: {status: 'N'} },
+        { new: true },
+    )
+    if (deleteResult) res.redirect("/emp/enroll/");
+    else res.status(404).send("delete fail")
 })
 
 module.exports = router

@@ -57,7 +57,7 @@
                     </div>
 
                     <!-- 사원등록 div -->
-                    <div class="enrollDiv" style="display: none;">
+                    <div class="enrollDiv" style="display: block;">
                         <form action="<%= typeof empInfo !== 'undefined' ? '/emp/update' : '/emp/enroll' %>"
                             method="post" id="enrollForm" enctype="multipart/form-data">
                             <input type="hidden" name="empNo"

@@ -46,30 +46,35 @@
   <script src='fullcalendar/dist/index.global.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.13/index.global.min.js'></script>
   <script>
+    let check = true;
     let calendar;
     let calendarEl = document.getElementById('calendar');
     let nowDate = new Date();
     let selectStart = null;
-    let selectEnd = null
+    let selectEnd = null;
+    let emp = 3;//사원
+    let chief = 3;//과장
+    let tLeader = 3;//팀장
 
     const inputStr = document.querySelector('input[id="inputStr"]');
     const inputEnd = document.querySelector('input[id="inputEnd"]');
     const reason = document.querySelector('textarea');
 
     var modal = document.getElementById("myModal");
-    var btn = document.getElementById("openModalBtn");
-    var span = document.getElementsByClassName("close")[0];
+    var closeBtn = document.getElementsByClassName("close")[0];
 
     document.addEventListener('DOMContentLoaded', function() {
       createAllCal();
 
-      span.onclick = function() {
+      closeBtn.onclick = function() {
         modal.style.display = "none";
+        check = false;
       }
 
       window.onclick = function(event) {
         if (event.target == modal) {
           modal.style.display = "none";
+          check = false;
         }
       }
 
@@ -94,6 +99,21 @@
     function createAllCal(){
       clearSelectDate();
       calendar = new FullCalendar.Calendar(calendarEl, {
+        events: [ //해당 부서 인원 / 해당 부서 현재 휴가율 계산해서 넣으면 될듯 휴가 불가한 날은 색칠 빨간색
+          {
+            title  : '과장급 : ' + emp + " / 총 인원의 " + emp + "%",
+            start  : '2024-07-01'
+          },
+          {
+            title  : '사원',
+            start  : '2024-07-01',
+            end    : '2025-07-01'
+          },
+          {
+            title  : '팀장',
+            start  : '2024-07-01',
+          }
+        ],
         headerToolbar: {
           left: 'prev',
           center: 'title',
@@ -119,6 +139,7 @@
           }else if(selectStart !== null){
             clearRange();
             selectStart = info.start;
+            check = true;
           }
         },
         unselectAuto: false,
@@ -153,13 +174,13 @@
           let forChangeStart = new Date(selectStart.getTime() + 86400000);
           selectStart = selectEnd;
           selectEnd = forChangeStart;
-        }else if(selectStart < selectEnd){
+        }else if(selectStart < selectEnd && check == true){
           selectStart = new Date(selectStart.getTime() + 86400000)
         }
 
         modal.style.display = 'block';
-        const start = inputStr.value = changeDate(new Date(selectStart.getTime() - 86400000));
-        const start1 = inputEnd.value = changeDate(new Date(selectEnd.getTime() - 86400000));
+        inputStr.value = changeDate(new Date(selectStart.getTime() - 86400000));
+        inputEnd.value = changeDate(new Date(selectEnd.getTime() - 86400000));
       } else if(!selectStart){
         alert('휴가 시작 날짜를 지정해주세요.');
       }else if(!selectEnd){
@@ -195,7 +216,7 @@
     }
 
     function signUp(){
-      if(reason.value !== ''){
+      if(reason.value !== ""){
         fetch('/hRManage/vRequest',{
           method: 'POST',
           headers: {
@@ -203,11 +224,12 @@
           },
           body: JSON.stringify({startDate: inputStr.value, endDate: inputEnd.value, reason: reason.value, kind: document.querySelector('select').value})
         }).then(response => response.json())
-          .then(data => console.log(data))
+          .then(data => alert(data.msg)).then(modal.style.display = 'none')
           .catch(error => console.error('Error:', error));
+      }else{
+        alert("사유를 입력해주세요")
       }
     }
-
   </script>
 </body>
 </html>

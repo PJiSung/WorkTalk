@@ -28,6 +28,22 @@ const holydaySchema = new mongoose.Schema({
   reason : {
     type: String,
     required: true
+  },
+  approve : {
+    type: Boolean,
+    required: true
+  },
+  check : {
+    type: Boolean,
+    required: true
+  },
+  appDate : {
+    type: Date,
+    required: true
+  },
+  cancel : {
+    type: Boolean,
+    required: true
   }
 })
 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비밀번호 변경</title>
+    <link href="/changePwd.css" rel="stylesheet">
+</head>
+
+<body>
+    <h3>비밀번호 변경</h3>
+    <div class="information">
+        <ul>
+            <li>현재 패스워드가 최초설정으로 등록되어 있습니다.</li>
+            <li>비밀번호를 변경하셔야 정상적으로 로그인이 가능합니다.</li>
+            <li>비밀번호는 최소 <span class="strong">10자리 이상 영문자 + 숫자 + 특수문자</span>로 등록하셔야 합니다.</li>
+        </ul>
+    </div>
+    <form action="/emp/changePwd" method="post" id="changeForm">
+        <input type="text" value="<%= empNo %>" name="empNo">
+        <table>
+            <tr>
+                <th>현재 비밀번호</th>
+                <td><input type="text" name="pwd" placeholder="현재 비밀번호 입력"></td>
+            </tr>
+            <tr>
+                <th>새비밀번호</th>
+                <td><input type="text" name="newPwd" placeholder="새 비밀번호 입력"></td>
+            </tr>
+            <tr>
+                <th>새비밀번호 확인</th>
+                <td><input type="text" name="reNewPwd" placeholder="새 비밀번호 확인"></td>
+            </tr>
+        </table>
+        <span id="msg">
+            <% if (typeof msg !== 'undefined' && msg) { %>
+                <p style="color: red;"><%= msg %></p>
+            <% } %>
+        </span>
+        <input type="button" id="submitBtn" value="확인">
+    </form>
+</body>
+
+<script>
+    // 일렉트론 알림창
+    // const { ipcRenderer } = require('electron');
+
+    // async function showDialog(msg) {
+    //     try {
+    //         const options = {
+    //             type: 'error',
+    //             title: '알림',
+    //             message: msg,
+    //             buttons: ['확인']
+    //         };
+    //         const result = await ipcRenderer.invoke('show-dialog', options);
+    //         console.log(result.response);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // }
+
+    //비밀번호 확인
+    document.getElementById('submitBtn').addEventListener('click', (e) => {
+        e.preventDefault(); 
+        const inputs = document.querySelectorAll('table input');
+        
+        const empty = [];
+        inputs.forEach((input, index) => {
+            if(input.value === '') empty.push(index);
+        })
+        console.log(empty)
+        if (empty.length > 0 || inputs[1].value != inputs[2].value) {
+            for(let i=0; i<inputs.length; i++){
+                inputs[i].style.border = '1px solid black';
+            }
+            document.getElementById("msg").innerHTML = "비밀번호를 확인해 주세요.<br>" 
+            document.getElementById('msg').style.color = 'red';
+
+            if(inputs[1].value != inputs[2].value){
+                inputs[1].style.border = '2px solid red';
+                inputs[2].style.border = '2px solid red';
+            }
+            if(empty.length > 0){
+                for(let i=0; i<empty.length; i++){
+                    inputs[empty[i]].style.border = '2px solid red';
+                    console.log(inputs[empty[i]].style.border)
+                }
+            }
+        }else{
+            document.getElementById("changeForm").submit();
+        }
+    })
+</script>
+
+</html>

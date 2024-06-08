@@ -7,14 +7,15 @@ const bcrypt = require('bcrypt')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
-const { encrypt, decrypt, convertDate } = require('./functions')
+const { encrypt, decrypt, convertDate } = require('./functions');
+const { runInNewContext } = require('vm');
 
 const upload = multer({
-    storage : multer.diskStorage({
-        filename(req, file, done){
+    storage: multer.diskStorage({
+        filename(req, file, done) {
             done(null, req.body.empNo + path.extname(file.originalname))
         },
-        destination(req, file, done){
+        destination(req, file, done) {
             done(null, path.join(__dirname, '..', '..', "public/upload"))
         },
     })
@@ -22,6 +23,7 @@ const upload = multer({
 
 router.post('/login', async (req, res) => {
 
+    console.log(req.body)
     const employee = await Employee.findOne({ empNo: req.body.empNo });
     if (employee != null) {
 
@@ -58,7 +60,12 @@ router.post('/login', async (req, res) => {
                 httpOnly: true
             })
 
-            res.render('test')
+            if(req.body.pwd == decrypt(employee.regNumber).split('-')[0]){
+                res.redirect('/emp/changePwd/' + req.body.empNo)
+            } else {
+                //메인으로 이동
+            }
+
         } else {
             res.render('index', { msg: "비밀번호가 일치하지 않습니다." })
         }
@@ -73,11 +80,11 @@ router.get('/enroll/:empNo?', async (req, res) => {
     let employees = {};
     let empInfo = {};
     let date = {};
-    if(typeof column != 'undefined') {
-        if(column == 'empNo') value = parseInt(value);
-        employees = await Employee.find({ [column] : { $regex : value }, status : 'Y'});
+    if (typeof column != 'undefined') {
+        if (column == 'empNo') value = parseInt(value);
+        employees = await Employee.find({ [column]: { $regex: value }, status: 'Y' });
     }
-    else employees = await Employee.find({status: 'Y'});
+    else employees = await Employee.find({ status: 'Y' });
 
 
     //주민번호 복호화
@@ -101,7 +108,7 @@ router.post('/enroll', upload.single('picture'), async (req, res) => {
     const employee = new Employee({
         empNo,
         pwd: encrypt(req.body.regNumber.split('-')[0], 'bcrypt'),
-        picture : empNo + path.extname(req.file.originalname),
+        picture: empNo + path.extname(req.file.originalname),
         dept, position, workType, name,
         regNumber: encrypt(req.body.regNumber, 'crypto'),
         address, phoneNumber, homeNumber, email, status, hireDate, outDate
@@ -131,7 +138,7 @@ router.post('/update', upload.single('picture'), async (req, res) => {
     empInfoKeys.splice(empInfoKeys.indexOf('empNo'), 1);
     empInfoKeys.splice(empInfoKeys.indexOf('picture'), 1);
 
-    if(req.file != null && req.file.filename != existingEmpInfo.picture){
+    if (req.file != null && req.file.filename != existingEmpInfo.picture) {
         fs.unlinkSync(__dirname + "../../../public/upload/" + existingEmpInfo.picture);
         updateColumn.picture = req.file.filename;
     }
@@ -158,11 +165,47 @@ router.get('/deleteEmp/:empNo', async (req, res) => {
 
     const deleteResult = await Employee.findOneAndUpdate(
         { empNo: req.params.empNo },
-        { $set: {status: 'N'} },
+        { $set: { status: 'N' } },
         { new: true },
     )
     if (deleteResult) res.redirect("/emp/enroll/");
     else res.status(404).send("delete fail")
+})
+
+router.get('/changePwd/:empNo', async (req, res) => {
+    const { empNo } = req.params
+    res.render('PJS/changePwd', { empNo })
+})
+
+router.post('/changePwd', async (req, res) => {
+
+    const { empNo, pwd, newPwd } = req.body;
+    const empInfo = await Employee.findOne({ empNo: empNo }, 'pwd')
+    let msg = "";
+
+    const checkPwd = await bcrypt.compare(
+        pwd,
+        empInfo.pwd
+    )
+
+    if (checkPwd){
+        await Employee.findOneAndUpdate(
+            { empNo: empNo },
+            { $set: { pwd: encrypt(newPwd, 'bcrypt') }}
+        )
+        const checkNewPwd = await bcrypt.compare(
+            newPwd,
+            empInfo.pwd
+        )
+        if(checkNewPwd) {
+            msg = "기존 비밀번호와 동일하게 설정할 수 없습니다."
+            res.render('PJS/changePwd', { empNo, msg })
+        }
+        else res.render("index")
+    } else {
+        msg = "현재 비밀번호가 일치하지 않습니다."
+        res.render('PJS/changePwd', { empNo, msg })
+    }
 })
 
 module.exports = router

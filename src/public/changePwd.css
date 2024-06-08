@@ -1,0 +1,34 @@
+.information{
+    width: 85%;
+    height: 15%;
+    border: 1px solid black;
+    background-color: #F5F5F5;
+}
+
+.strong {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+table {
+    margin-top: 20px;
+    width: 85%;
+    border-collapse: collapse;
+}
+
+table tr {
+    height: 40px;
+}
+
+table th, table td {
+    border-bottom: 1px solid gray;
+}
+
+table th {
+    width: 30%;
+    border-right: 1px solid gray;
+}
+
+table tr:first-child {
+    border-top: 2px solid black;
+}

@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const electronReload = require('electron-reload')
 const path = require('node:path');
 
@@ -14,6 +14,8 @@ const createWindow = () => {
     height: 600,
     fullscreen: true,
     webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
@@ -24,8 +26,12 @@ const createWindow = () => {
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();
+  ipcMain.handle('show-dialog', async (event, options) => {
+    const { type, title, message, buttons } = options;
+    return await dialog.showMessageBox({ type, title, message, buttons });
+  });
 };
- 
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

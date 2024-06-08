@@ -64,8 +64,8 @@ router.post('/login', async (req, res) => {
                 res.redirect('/emp/changePwd/' + req.body.empNo)
             } else {
                 //메인으로 이동
+                res.render('KYW/vCalendar.ejs')
             }
-
         } else {
             res.render('index', { msg: "비밀번호가 일치하지 않습니다." })
         }

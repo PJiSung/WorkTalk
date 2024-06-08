@@ -7,12 +7,19 @@
   </div>
   <div class="sidebar2">
     <a href="/hRManage/myChatList"><div class="sidebar-item2">채팅</div></a>
+    <hr>
     <div class="sidebar-item2" id="makeRoom">단체 채팅방 생성</div>
+    <hr>
     <div class="sidebar-item2">부서별 사원</div>
+    <hr>
   </div>
 </div>
 <script>
   let userClick;
+  let addListArr = [];
+  
+  let removeListNum = 0;
+
 
   document.body.addEventListener('click',() =>{
     userClick = event.target;
@@ -27,17 +34,44 @@
     if(!document.querySelector("div[class='group']")){
       const newDiv = document.createElement('div');
       newDiv.className = "group";
-      newDiv.innerHTML = "단체방 초대 <hr class='group'> 초대 인원 선택 <br> <div class='group'>asdasd</div>"
+      newDiv.innerHTML = "단체방 초대 <hr class='group'> 초대 인원 <br> <div class='group addZone'></div> <hr class='group'> 리스트 <div class='group empZone'></div>"
       newDiv.style.background = 'black';
       newDiv.style.color = 'white';
       newDiv.style.position = 'fixed';
       newDiv.style.left = '170px';
-      newDiv.style.width = '200px';
+      newDiv.style.width = '300px';
       newDiv.style.borderRadius = '5%';
       newDiv.style.zIndex = 9999;
       document.querySelector("div[id='makeRoom']").appendChild(newDiv);
+      document.querySelector('.empZone').style.overflow = 'auto';
+      empList.forEach((element, index) => {
+        document.querySelector('.empZone').innerHTML += "<div class='group empsInfo'" + element.empNo +"'><div class='half group'><image class='group' src='" + element.picture +"'></div><div class='detailInfo group'>부서 : " + element.dept + "/ 이름 : " + element.name + " <button class='group addList' onClick='activateEvent(this, " + index + ");'>추가</button></div></div>";
+      });
     }
-  })
+  });
+
+  function activateEvent(button, index){
+    const infoDiv = button.parentElement.parentElement;
+    addListArr.push({
+      empNo : empList[index].empNo,
+      name : empList[index].name,
+      index : index
+    })
+    //이미 요소가 존재한다면 뜯어서 이동시킴
+    let addThing = document.querySelector('div[class="group addZone"]').appendChild(infoDiv);
+    const changeButton = addThing.children[1].children[0];
+    changeButton.classList.remove('addList');
+    changeButton.classList.add('removeList');
+    changeButton.innerText = "삭제";
+    changeButton.setAttribute('onclick', 'removeEvent(this, ' +  removeListNum + ')');
+    removeListNum++;
+  }
+
+  function removeEvent(){
+
+  }
+
+  
 
   function closeNewDiv(){
     const group = document.querySelector("div[class='group']");

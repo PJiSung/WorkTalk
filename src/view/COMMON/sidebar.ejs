@@ -17,9 +17,7 @@
 <script>
   let userClick;
   let addListArr = [];
-  
-  let removeListNum = 0;
-
+  /* let empList = JSON.parse('<%- JSON.stringify(empList) %>'); */
 
   document.body.addEventListener('click',() =>{
     userClick = event.target;
@@ -45,17 +43,16 @@
       document.querySelector("div[id='makeRoom']").appendChild(newDiv);
       document.querySelector('.empZone').style.overflow = 'auto';
       empList.forEach((element, index) => {
-        document.querySelector('.empZone').innerHTML += "<div class='group empsInfo'" + element.empNo +"'><div class='half group'><image class='group' src='" + element.picture +"'></div><div class='detailInfo group'>부서 : " + element.dept + "/ 이름 : " + element.name + " <button class='group addList' onClick='activateEvent(this, " + index + ");'>추가</button></div></div>";
+        document.querySelector('.empZone').innerHTML += "<div class='group empsInfo' data-empNo="+element.empNo +" data-index=" + index + " data-name=" + element.name + "'><div class='half group'><image class='group' src='" + element.picture +"'></div><div class='detailInfo group'>부서 : " + element.dept + "/ 이름 : " + element.name + " <button class='group addList' onClick='activateEvent(this);'>추가</button></div></div>";
       });
     }
   });
 
-  function activateEvent(button, index){
+  function activateEvent(button){
     const infoDiv = button.parentElement.parentElement;
     addListArr.push({
-      empNo : empList[index].empNo,
-      name : empList[index].name,
-      index : index
+      empNo : infoDiv.dataset.empno,
+      name : infoDiv.dataset.name,
     })
     //이미 요소가 존재한다면 뜯어서 이동시킴
     let addThing = document.querySelector('div[class="group addZone"]').appendChild(infoDiv);
@@ -63,12 +60,46 @@
     changeButton.classList.remove('addList');
     changeButton.classList.add('removeList');
     changeButton.innerText = "삭제";
-    changeButton.setAttribute('onclick', 'removeEvent(this, ' +  removeListNum + ')');
-    removeListNum++;
+    changeButton.setAttribute('onclick', 'removeEvent(this)');
+
+    console.log(addListArr,"asd")
   }
 
-  function removeEvent(){
+  function removeEvent(button) {
+    const infoDiv = button.parentElement.parentElement;
+    const empZone = document.querySelector('.empZone');
+    const index = parseInt(infoDiv.getAttribute('data-index'), 10);
 
+    addListArr = addListArr.filter(item => item.empNo !== infoDiv.dataset.empno);
+
+    const children = Array.from(empZone.children);
+
+    let left = 0;
+    let right = children.length - 1;
+    let insertPos = children.length;
+
+    while (left <= right) {
+      const mid = Math.floor((left + right) / 2);
+      const midIndex = parseInt(children[mid].getAttribute('data-index'), 10);
+      if (index < midIndex) {
+        insertPos = mid;
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+
+    const changeButton = infoDiv.querySelector('button');
+    changeButton.classList.remove('removeList');
+    changeButton.classList.add('addList');
+    changeButton.innerText = "추가";
+    changeButton.setAttribute('onclick', `activateEvent(this, ${index})`);
+
+    if (insertPos === children.length) {
+      empZone.appendChild(infoDiv);
+    } else {
+      empZone.insertBefore(infoDiv, children[insertPos]);
+    }
   }
 
   

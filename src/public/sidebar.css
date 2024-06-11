@@ -1,4 +1,4 @@
-#forSidebar{
+#forSidebar {
   margin-left: 260px;
 }
 
@@ -24,7 +24,7 @@
   background-color: pink;
 }
 
-.sidebar2{
+.sidebar2 {
   top: 60px;
   left: 80px;
   width: 180px;
@@ -34,31 +34,40 @@
   z-index: 1000;
 }
 
-.sidebar2 a{
+.sidebar2 a {
   text-decoration: none;
   color: inherit;
 }
 
 .sidebar-item2 {
-  top:0;
+  top: 0;
   margin-top: 25px;
   text-align: center;
   padding: 10px;
   cursor: pointer;
 }
 
-.half{
+.half {
   width: 15%;
   display: inline-block;
 }
 
-.detailInfo{
+.detailInfo {
   width: 85%;
   display: inline-block;
 }
 
-.addList{
+.addList {
   border-radius: 5px;
   background-color: blue;
   color: white;
+}
+
+.profile {
+  position: absolute;
+  background-color: #333333;
+  color: white;
+  top: 89%;
+  width: 89%;
+  bottom: 0;
 }

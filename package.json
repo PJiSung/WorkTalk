@@ -37,6 +37,7 @@
     "@syncfusion/ej2-schedule": "^25.2.6",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
@@ -51,6 +52,8 @@
     "mongoose": "^8.4.0",
     "multer": "^1.4.5-lts.1",
     "path": "^0.12.7",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "tui-calendar": "^1.15.3"
   }
 }

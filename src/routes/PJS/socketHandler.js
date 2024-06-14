@@ -12,6 +12,7 @@ function handleMessage(socket, message) {
 }
 
 function handleRoom(io, socket, room) {
+    
     let clientsInRoom = io.of("/").adapter.rooms.get(room);
     let numClients = clientsInRoom ? clientsInRoom.size : 0;
     log(socket)('Room ' + room + ' now has ' + numClients + ' client(s)');
@@ -21,7 +22,7 @@ function handleRoom(io, socket, room) {
         socket.join(room);
         log(socket)('Client ID ' + socket.id + ' created room ' + room);
         socket.emit('created', room, socket.id);
-        console.log("clientsInRoom = " + clientsInRoom)
+
     } else if (numClients === 1) {
         console.log('join room!');
         log(socket)('Client Id' + socket.id + 'joined room' + room);
@@ -36,14 +37,19 @@ function handleRoom(io, socket, room) {
 
 function handleConnection(io, socket) {
     console.log("connect")
-    const logFn = log(socket);
-
     socket.on('message', (message) => {
+        //console.log(message);
         handleMessage(socket, message);
     });
 
     socket.on('create or join', (room) => {
         handleRoom(io, socket, room);
+    });
+
+    socket.on('reload video', (streamInfo, room) => {
+        console.log(streamInfo)
+        console.log(room)
+        io.sockets.in(room).emit('reload video', streamInfo);
     });
 }
 

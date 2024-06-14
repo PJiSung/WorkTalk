@@ -5,12 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>화상채팅</title>
+    <link href="/sidebar.css" rel="stylesheet">
+    <link href="/header.css" rel="stylesheet">
 </head>
 
 <body>
     <div>
         <video id="localVideo" autoplay width="480px"></video>
         <video id="remoteVideo" width="480px" autoplay></video>
+        <input type="button" value="음성" id="isAudio"><input type="button" value="화상" id="isVideo">
+        <input type="button" value="종료" id="close">
     </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
@@ -24,6 +28,9 @@
     let localStream;
     let remoteStream;
     let pc;
+    let enableVideo = false;
+    let isVideo = false;
+    let isAudio = true;
 
     let pcConfig = {
         'iceServers': [{
@@ -31,9 +38,62 @@
         }]
     }
 
-    let room = 'foo';
+    //let room = 'foo';
+    let room = '<%= room %>';
 
     const socket = io();
+
+    localVideo.muted = true;
+
+    window.onload = () => {
+        startStream();
+    }
+
+    const startStream = () => {
+        navigator.mediaDevices
+            .getUserMedia({
+                video: true,
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                },
+            })
+            .then(gotStream)
+            .catch((error) => console.error(error));
+    }
+
+    //비디오 활성화/비활성화
+    document.getElementById("isVideo").addEventListener('click', () => {
+        if (isVideo) isVideo = false;
+        else isVideo = true;
+        localVideo.srcObject.getVideoTracks().forEach((track) => (track.enabled = isVideo));
+    })
+
+    //오디오 활성화/비황성화
+    document.getElementById("isAudio").addEventListener('click', () => {
+        if (isAudio) isAudio = false;
+        else isAudio = true;
+        localVideo.srcObject.getAudioTracks().forEach((track) => (track.enabled = isAudio));
+    })
+
+    document.getElementById('close').addEventListener('click', () => {
+        pc.close();
+        localStream = null;
+        sendMessage('close', room)
+        location.href = '/chat/test'
+    })
+
+    function gotStream(stream) {
+        console.log("Adding local stream");
+        localStream = stream;
+        localVideo.srcObject = stream;
+        localVideo.srcObject.getVideoTracks().forEach((track) => (track.enabled = isVideo));
+        sendMessage("got user media");
+        if (isInitiator) {
+            maybeStart();
+        }
+    }
 
     if (room !== '') {
         socket.emit('create or join', room);
@@ -50,8 +110,8 @@
     });
 
     socket.on('join', room => {
-        console.log('Another peer made a request to join room' + room);
-        console.log('This peer is the initiator of room' + room + '!');
+        console.log('Another peer made a request to join room ' + room);
+        console.log('This peer is the initiator of room ' + room + '!');
         isChannelReady = true;
     })
 
@@ -59,8 +119,8 @@
         console.log('joined : ' + room);
         isChannelReady = true;
     })
-    socket.on('log', array => {
 
+    socket.on('log', array => {
         console.log.apply(console, array);
     });
 
@@ -81,36 +141,22 @@
                 sdpMLineIndex: message.label,
                 candidate: message.candidate
             });
-
             pc.addIceCandidate(candidate);
+        } else if (message === 'close') {
+            pc.close();
+            localStream = null;
+            location.href = '/chat/test'
         }
     })
+
     function sendMessage(message) {
         console.log('Client sending message: ', message);
         socket.emit('message', message);
     }
 
-    navigator.mediaDevices
-        .getUserMedia({
-            video: false,
-            audio: true,
-        })
-        .then(gotStream)
-        .catch((error) => console.error(error));
-
-    function gotStream(stream) {
-        console.log("Adding local stream");
-        localStream = stream;
-        localVideo.srcObject = stream;
-        sendMessage("got user media");
-        if (isInitiator) {
-            maybeStart();
-        }
-    }
-
     function createPeerConnection() {
         try {
-            pc = new RTCPeerConnection(null);
+            pc = new RTCPeerConnection(pcConfig);
             pc.onicecandidate = handleIceCandidate;
             pc.onaddstream = handleRemoteStreamAdded;
             console.log("Created RTCPeerConnection");
@@ -182,4 +228,5 @@
         console.error("Falied to create session Description", error);
     }
 </script>
+
 </html>

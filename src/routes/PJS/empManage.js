@@ -23,7 +23,6 @@ const upload = multer({
 
 router.post('/login', async (req, res) => {
 
-    console.log(req.body)
     const employee = await Employee.findOne({ empNo: req.body.empNo });
     if (employee != null) {
 
@@ -97,8 +96,8 @@ router.get('/enroll/:empNo?', async (req, res) => {
         }
     }
 
-    if (req.params.empNo) res.render("PJS/enroll", { employees, empInfo, date })
-    else res.render("PJS/enroll", { employees })
+    if (req.params.empNo) res.render("PJS/empManage", { employees, empInfo, date })
+    else res.render("PJS/empManage", { employees })
 })
 
 router.post('/enroll', upload.single('picture'), async (req, res) => {

@@ -18,7 +18,6 @@
 <script>
   let userClick;
   let addListArr = [];
-  /* let empList = JSON.parse('<%- JSON.stringify(empList) %>'); */
 
   document.body.addEventListener('click',() =>{
     userClick = event.target;
@@ -102,8 +101,6 @@
       empZone.insertBefore(infoDiv, children[insertPos]);
     }
   }
-
-  
 
   function closeNewDiv(){
     const group = document.querySelector("div[class='group']");

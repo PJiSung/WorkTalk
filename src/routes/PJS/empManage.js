@@ -3,11 +3,12 @@ const router = require('express').Router()
 const jwt = require("jsonwebtoken")
 const cookieParser = require("cookie-parser")
 const Employee = require('../../models/employee');
+const RefreshToken = require('../../models/token');
 const bcrypt = require('bcrypt')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
-const { encrypt, decrypt, convertDate } = require('./functions');
+const { encrypt, decrypt, convertDate, makeRefreshToken, makeAccessToken, verify} = require('./functions');
 const { runInNewContext } = require('vm');
 
 const upload = multer({
@@ -22,7 +23,6 @@ const upload = multer({
 })
 
 router.post('/login', async (req, res) => {
-
     const employee = await Employee.findOne({ empNo: req.body.empNo });
     if (employee != null) {
 
@@ -34,27 +34,23 @@ router.post('/login', async (req, res) => {
         if (checkPwd) {
 
             //access Token 발급
-            const accessToken = jwt.sign({
-                empNo: employee.empNo,
-            }, process.env.ACCESS_SECRET, {
-                expiresIn: "1m",
-                issuer: "workTalk"
-            });
-
+            const accessToken = await makeAccessToken(employee.empNo);
+            console.log(jwt.decode(accessToken))
             //refresh Token 발급
-            const refreshToken = jwt.sign({
-                empNo: employee.empNo,
-            }, process.env.REFRESH_SECRET, {
-                expiresIn: "24h",
-                issuer: "workTalk"
-            });
+            const refreshToken = await makeRefreshToken(employee.empNo);
+
+            if(refreshToken){
+                await RefreshToken.findOneAndUpdate(
+                    {empNo: employee.empNo}, {refreshToken: refreshToken}, {upsert: true}
+                )
+            }
 
             res.cookie("accessToken", accessToken, {
                 secure: false,
                 httpOnly: true
             })
 
-            res.cookie("refreshToken", accessToken, {
+            res.cookie("refreshToken", refreshToken, {
                 secure: false,
                 httpOnly: true
             })
@@ -74,6 +70,9 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/enroll/:empNo?', async (req, res) => {
+
+    const token = await verify(req, res)
+    console.log(token)
 
     let { column, value } = req.query;
     let employees = {};
@@ -206,5 +205,7 @@ router.post('/changePwd', async (req, res) => {
         res.render('PJS/changePwd', { empNo, msg })
     }
 })
+
+router.post('/verify', verify)
 
 module.exports = router

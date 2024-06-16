@@ -8,6 +8,7 @@
 <body>
     <input type="text" id="room">
     <input type="button" value="완" id="btn">
+    <%= token.empNo %> <%= token.name %>
     <script>
         document.getElementById("btn").addEventListener("click", () => {
             location.href = '/chat/oneOnOne/' + document.getElementById('room').value;

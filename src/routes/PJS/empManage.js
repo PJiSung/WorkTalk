@@ -8,8 +8,8 @@ const bcrypt = require('bcrypt')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
+const io = require('socket.io-client')
 const { encrypt, decrypt, convertDate, makeRefreshToken, makeAccessToken, verify} = require('./functions');
-const { runInNewContext } = require('vm');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -25,7 +25,7 @@ const upload = multer({
 router.post('/login', async (req, res) => {
     const employee = await Employee.findOne({ empNo: req.body.empNo });
     if (employee != null) {
-
+        
         const checkPwd = await bcrypt.compare(
             req.body.pwd,
             employee.pwd
@@ -35,7 +35,6 @@ router.post('/login', async (req, res) => {
 
             //access Token 발급
             const accessToken = await makeAccessToken(employee.empNo);
-            console.log(jwt.decode(accessToken))
             //refresh Token 발급
             const refreshToken = await makeRefreshToken(employee.empNo);
 
@@ -59,7 +58,8 @@ router.post('/login', async (req, res) => {
                 res.redirect('/emp/changePwd/' + req.body.empNo)
             } else {
                 //메인으로 이동
-                res.render('KYW/vCalendar.ejs')
+                //res.render('KYW/vCalendar.ejs')
+                res.redirect('/emp/enroll')
             }
         } else {
             res.render('index', { msg: "비밀번호가 일치하지 않습니다." })
@@ -71,9 +71,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/enroll/:empNo?', async (req, res) => {
 
-    const token = await verify(req, res)
-    console.log(token)
-
+    const myInfo = await verify(req, res);
     let { column, value } = req.query;
     let employees = {};
     let empInfo = {};
@@ -95,8 +93,10 @@ router.get('/enroll/:empNo?', async (req, res) => {
         }
     }
 
-    if (req.params.empNo) res.render("PJS/empManage", { employees, empInfo, date })
-    else res.render("PJS/empManage", { employees })
+    // if (req.params.empNo) res.render("PJS/empManage", { employees, empInfo, date })
+    // else res.render("PJS/empManage", { employees })
+    if (req.params.empNo) res.render("PJS/callTest", { employees, empInfo, date })
+    else res.render("PJS/callTest", { employees, empNo: myInfo.empNo })
 })
 
 router.post('/enroll', upload.single('picture'), async (req, res) => {

@@ -10,6 +10,7 @@ router.get('/test', async (req, res) => {
 
 router.get('/oneOnOne/:room', async (req, res) => {
     const { room } = req.params
+    console.log(room)
     res.render('PJS/client', {room})
 });
 

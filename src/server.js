@@ -49,5 +49,3 @@ require('electron-reload')([
   electron: require(path.join(__dirname, '../node_modules/electron'))
 });
 
-
-

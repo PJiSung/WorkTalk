@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅방</title>
+    <link href="/header.css" rel="stylesheet">
+    <link href="/sidebar.css" rel="stylesheet">
+    <link href="/chatInside.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../../COMMON/header.ejs') %>
+    <%- include('../../COMMON/sidebar.ejs') %>
+    <input type="hidden" value="<%= chatRoomId %>" id="roomId">
+    <div id="forSidebar" >
+        <div class="chat-container">
+            <div class="message received">
+                <div class="avatar">A</div>
+                <div class="text">
+                    <div class="username">사용자1</div>
+                    <div class="message-content">안녕하세요!</div>
+                    <div class="timestamp">오후 3:45</div>
+                </div>
+            </div>
+            <div class="message sent">
+                <div class="text">
+                    <div class="username">나</div>
+                    <div class="message-content">안녕하세요! 반갑습니다.</div>
+                    <div class="timestamp">오후 3:46</div>
+                </div>
+                <div class="avatar">B</div>
+            </div>
+        </div>
+        <div id="inputBoxDiv">
+            <textarea id="inputBox"></textarea>
+            <button id="submitBtn" onclick="sendMessage();">전송</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const roomId = document.querySelector('input[id="roomId"]').value;
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Connected to the server');
+        });
+
+        socket.on('message', (data) => {
+            console.log("wqe879as6d", data);
+            const messages = document.getElementById('messages');
+            const message = document.createElement('div');
+            message.className = 'message ' + (data.userName === '나' ? 'sent' : 'received');
+            message.innerHTML = `
+                <div class="avatar">${data.userName.charAt(0)}</div>
+                <div class="text">
+                    <div class="username">${data.userName}</div>
+                    <div class="message-content">${data.content}</div>
+                    <div class="timestamp">${new Date(data.time).toLocaleTimeString()}</div>
+                </div>
+            `;
+            messages.appendChild(message);
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('inputBox');
+            if (input.value !== '') {
+                const message = {
+                    empNo: '202401001',
+                    userName: '나',
+                    content: input.value,
+                    chatRoomId: roomId
+                };
+                socket.emit('message', message);
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -6,10 +6,33 @@
   <title>Document</title>
   <link href="/header.css" rel="stylesheet">
   <link href="/sidebar.css" rel="stylesheet">
+  <link href="/chatList.css" rel="stylesheet">
 </head>
 <body>
   <%- include('../../COMMON/header.ejs') %>
   <%- include('../../COMMON/sidebar.ejs') %>
-  <div>채팅</div>
+  <div id="forSidebar" >
+    <div class="chat-list-container">
+        <div class="chat-room">
+            <div class="avatar">A</div>
+            <div class="chat-info">
+                <div class="chat-name">채팅방 1</div>
+                <div class="last-message">마지막 메시지 내용...</div>
+            </div>
+            <div class="timestamp">오후 3:45</div>
+        </div>
+        <div class="chat-room">
+            <div class="avatar">B</div>
+            <div class="chat-info">
+                <div class="chat-name">채팅방 2</div>
+                <div class="last-message">여기도 마지막 메시지...</div>
+            </div>
+            <div class="timestamp">오후 3:46</div>
+        </div>
+        cList : <%= JSON.stringify(cList) %> <br><br>
+        lastChat : <%= JSON.stringify(lastChat) %>
+        <!-- 추가 채팅방 항목들을 여기에 추가할 수 있습니다 -->
+    </div>
+  </div>
 </body>
 </html>

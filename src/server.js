@@ -11,7 +11,7 @@ const { handleConnection } = require('./routes/PJS/socketHandler.js');
 const io = socketIO(server, {
   cors: {
       origin: '*',
-      methods: ['GET', 'POST'] 
+      methods: ['GET', 'POST']
   }
 });
 
@@ -46,5 +46,6 @@ require('electron-reload')([
   electron: require(path.join(__dirname, '../node_modules/electron'))
 });
 
+const resourceManage = require('./routes/KYW/resourceMange.js')(io); // io를 전달
 
 

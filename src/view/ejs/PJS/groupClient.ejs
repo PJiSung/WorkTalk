@@ -12,7 +12,7 @@
 <body>
     <div>
         <video id="localVideo" autoplay width="480px"></video>
-        <video id="remoteVideo" width="480px" autoplay></video>
+        <div id="remoteVideoDiv"></div>
         <input type="button" value="음성" id="isAudio"><input type="button" value="화상" id="isVideo">
         <input type="button" value="종료" id="close">
     </div>
@@ -20,16 +20,17 @@
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script>
         let localVideo = document.getElementById("localVideo");
-        let remoteVideo = document.getElementById("remoteVideo");
+        let remoteVideoDiv = document.getElementById('remoteVideoDiv')
         let isInitiator = false;
         let isChannelReady = false;
         let isStarted = false;
         let localStream;
-        let remoteStream;
+        let pcs = {};
         let pc;
         let enableVideo = false;
         let isVideo = false;
         let isAudio = true;
+        let userId;
 
         let pcConfig = {
             'iceServers': [{
@@ -55,9 +56,11 @@
                     label: event.candidate.sdpMLineIndex,
                     id: event.candidate.sdpMid,
                     candidate: event.candidate.candidate,
+                    userId: userId,
                 });
             } else {
                 console.log("end of candidates");
+                isStarted = false;
             }
         }
 
@@ -67,16 +70,19 @@
 
         function handleRemoteStreamAdded(event) {
             console.log("remote stream added");
-            console.log(event)
-            remoteStream = event.stream;
-            remoteVideo.srcObject = remoteStream;
+            let remoteVideo = document.createElement("video");
+            remoteVideo.width = 480;
+            remoteVideo.autoplay = true;
+            remoteVideo.srcObject = event.stream;
+            remoteVideoDiv.appendChild(remoteVideo);
         }
 
-        function createPeerConnection() {
+        function createPeerConnection(userId) {
             try {
                 pc = new RTCPeerConnection(pcConfig);
                 pc.onicecandidate = handleIceCandidate;
                 pc.onaddstream = handleRemoteStreamAdded;
+                pcs[userId] = pc;
                 console.log("Created RTCPeerConnection");
             } catch (e) {
                 alert("connot create RTCPeerConnection object");
@@ -84,16 +90,15 @@
             }
         }
 
-        const maybeStart = () => {
+        const maybeStart = (userId) => {
             console.log(">>MaybeStart() : ", isStarted, localStream, isChannelReady);
             if (!isStarted && typeof localStream !== "undefined" && isChannelReady) {
                 console.log(">>>>> creating peer connection");
-                createPeerConnection();
-                pc.addStream(localStream);
+                createPeerConnection(userId);
+                pcs[userId].addStream(localStream);
                 isStarted = true;
-                console.log("isInitiator : ", isInitiator);
                 if (isInitiator) {
-                    doCall();
+                    doCall(userId);
                 }
             } else {
                 console.error('maybeStart not Started!');
@@ -104,11 +109,11 @@
             console.log("Adding local stream");
             localStream = stream;
             localVideo.srcObject = stream;
-            localVideo.srcObject.getVideoTracks().forEach((track) => (track.enabled = isVideo));
+            //localVideo.srcObject.getVideoTracks().forEach((track) => (track.enabled = isVideo));
             sendMessage("got user media", () => {
                 setTimeout(() => {
-                    if(isInitiator) {
-                        maybeStart();
+                    if (isInitiator) {
+                        maybeStart(userId);
                     }
                 }, 100)
             });
@@ -161,6 +166,7 @@
 
         socket.on('created', (room, id) => {
             console.log('Created room ' + room + ' socket ID : ' + id);
+            userId = id;
             isInitiator = true;
         })
 
@@ -168,13 +174,14 @@
             console.log('Room ' + room + 'is full');
         });
 
-        socket.on('join', room => {
+        socket.on('join', (room, id) => {
             console.log('Another peer made a request to join room ' + room);
             console.log('This peer is the initiator of room ' + room + '!');
+            userId = id;
             isChannelReady = true;
         })
 
-        socket.on('joined', room => {
+        socket.on('joined', (room, id) => {
             console.log('joined : ' + room);
             isChannelReady = true;
         })
@@ -189,48 +196,52 @@
             location.href = '/emp/enroll'
         });
 
-        function setLocalAndSendMessage(sessionDescription) {
-            pc.setLocalDescription(sessionDescription);
-            //sendMessage({type: 'offer', offer: sessionDescription});
-            sendMessage(sessionDescription);
+        function setLocalAndSendMessage(sessionDescription, userId) {
+            pcs[userId].setLocalDescription(sessionDescription);
+            sendMessage({
+                type: sessionDescription.type,
+                sdp: sessionDescription.sdp,
+                userId: userId
+            });
         }
 
         function onCreateSessionDescriptionError(error) {
             console.error("Falied to create session Description", error);
         }
 
-        function doCall() {
+        function doCall(userId) {
             console.log("Sending offer to peer");
-            pc.createOffer(setLocalAndSendMessage, handleCreateOfferError);
+            pcs[userId].createOffer()
+                .then(sessionDescription => setLocalAndSendMessage(sessionDescription, userId))
+                .catch(onCreateSessionDescriptionError);
         }
 
-        function doAnswer() {
+        function doAnswer(userId) {
             console.log("Sending answer to peer");
-            pc.createAnswer().then(
-                setLocalAndSendMessage,
-                onCreateSessionDescriptionError
-            );
+            pcs[userId].createAnswer()
+                .then(sessionDescription => setLocalAndSendMessage(sessionDescription, userId))
+                .catch(onCreateSessionDescriptionError);
         }
 
         socket.on('message', (message) => {
             console.log('Client received message :', message);
-            console.log(message)
-            if (message === 'got user media') {
-                maybeStart()
+            if (message.msg === 'got user media') {
+                maybeStart(message.userId)
             } else if (message.type === 'offer') {
                 if (!isInitiator && !isStarted) {
-                    maybeStart();
+                    maybeStart(userId);
                 }
-                pc.setRemoteDescription(new RTCSessionDescription(message));
-                doAnswer();
+                pcs[userId].setRemoteDescription(new RTCSessionDescription(message));
+                doAnswer(userId);
             } else if (message.type === 'answer' && isStarted) {
-                pc.setRemoteDescription(new RTCSessionDescription(message));
+                pcs[userId].setRemoteDescription(new RTCSessionDescription(message));
             } else if (message.type === 'candidate' && isStarted) {
                 const candidate = new RTCIceCandidate({
                     sdpMLineIndex: message.label,
                     candidate: message.candidate
                 });
-                pc.addIceCandidate(candidate);
+                pcs[userId].addIceCandidate(candidate);
+                isStarted = false;
             }
         })
 

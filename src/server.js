@@ -30,8 +30,8 @@ expressApp.get('/', function (req, res) {
     //res.redirect('/emp/enroll')
     //res.redirect('/emp/changePwd/202405003') //888888
     //res.render('PJS/client') //화상
-    //res.render('PJS/test')
-    res.render('index')
+    res.render('PJS/test')
+    //res.render('index')
 })
 
 io.on('connection', (socket) => {

@@ -244,25 +244,31 @@
                                         </th>
                                     </tr>
                                 </table>
-                            </div>
+                        </form>
+                        <form action="/emp/verify" method="post">
+                            <input type="submit" value="검증">
                         </form>
                     </div>
+                    </form>
                 </div>
-                <!-- 모달 -->
-                <div id="myModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" id="closeButton">&times;</span>
-                        <br><h3 id="modalText"></h3>
-                        <div>
-                            <button id="confirmButton">확인</button>
-                            <button id="cancelButton">취소</button>
-                        </div>
+            </div>
+            <!-- 모달 -->
+            <div id="myModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeButton">&times;</span>
+                    <br>
+                    <h3 id="modalText"></h3>
+                    <div>
+                        <button id="confirmButton">확인</button>
+                        <button id="cancelButton">취소</button>
                     </div>
                 </div>
+            </div>
             </div>
 
 
 </body>
+<script src="/socket.io/socket.io.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
     //다음 주소 API
@@ -361,12 +367,56 @@
         document.getElementsByName("address")[0].value = address;
     })
 
+
+
+
+
+
+
+
+
+
+
+    const socket = io();
+    const empNo = '<%= empNo %>';
+    socket.emit('login', empNo)
+    console.log(socket)
     //사원 상세
     document.querySelectorAll("tr[name='empInfo']").forEach(row => {
         row.addEventListener("click", (e) => {
-            location.href = "/emp/enroll/" + e.target.parentElement.children[1].innerText;
+            socket.emit('call', { to: e.target.parentElement.children[1].innerText, from: empNo });
         });
     });
+
+    socket.on('call', (data) => {
+        console.log(`Incoming call from ${data.from}`);
+        let result = confirm(data.from+'으로부터 통화옴');
+        if(result) {
+            socket.emit('acceptCall', { to: data.from, from: empNo});
+            location.href = '/chat/oneOnOne/' + data.from;
+        }
+    });
+
+    socket.on('acceptCall', (data) => {
+        location.href = '/chat/oneOnOne/' + empNo
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //사진등록 버튼
     document.getElementById("uploadImgBtn").addEventListener('click', () => {

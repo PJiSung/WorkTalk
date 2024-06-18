@@ -3,12 +3,13 @@ const router = require('express').Router()
 const jwt = require("jsonwebtoken")
 const cookieParser = require("cookie-parser")
 const Employee = require('../../models/employee');
+const RefreshToken = require('../../models/token');
 const bcrypt = require('bcrypt')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
-const { encrypt, decrypt, convertDate } = require('./functions');
-const { runInNewContext } = require('vm');
+const io = require('socket.io-client')
+const { encrypt, decrypt, convertDate, makeRefreshToken, makeAccessToken, verify} = require('./functions');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -22,11 +23,9 @@ const upload = multer({
 })
 
 router.post('/login', async (req, res) => {
-
-    console.log(req.body)
     const employee = await Employee.findOne({ empNo: req.body.empNo });
     if (employee != null) {
-
+        
         const checkPwd = await bcrypt.compare(
             req.body.pwd,
             employee.pwd
@@ -35,27 +34,22 @@ router.post('/login', async (req, res) => {
         if (checkPwd) {
 
             //access Token 발급
-            const accessToken = jwt.sign({
-                empNo: employee.empNo,
-            }, process.env.ACCESS_SECRET, {
-                expiresIn: "1m",
-                issuer: "workTalk"
-            });
-
+            const accessToken = await makeAccessToken(employee.empNo);
             //refresh Token 발급
-            const refreshToken = jwt.sign({
-                empNo: employee.empNo,
-            }, process.env.REFRESH_SECRET, {
-                expiresIn: "24h",
-                issuer: "workTalk"
-            });
+            const refreshToken = await makeRefreshToken(employee.empNo);
+
+            if(refreshToken){
+                await RefreshToken.findOneAndUpdate(
+                    {empNo: employee.empNo}, {refreshToken: refreshToken}, {upsert: true}
+                )
+            }
 
             res.cookie("accessToken", accessToken, {
                 secure: false,
                 httpOnly: true
             })
 
-            res.cookie("refreshToken", accessToken, {
+            res.cookie("refreshToken", refreshToken, {
                 secure: false,
                 httpOnly: true
             })
@@ -64,7 +58,8 @@ router.post('/login', async (req, res) => {
                 res.redirect('/emp/changePwd/' + req.body.empNo)
             } else {
                 //메인으로 이동
-                res.render('KYW/vCalendar.ejs')
+                //res.render('KYW/vCalendar.ejs')
+                res.redirect('/emp/enroll')
             }
         } else {
             res.render('index', { msg: "비밀번호가 일치하지 않습니다." })
@@ -76,6 +71,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/enroll/:empNo?', async (req, res) => {
 
+    const myInfo = await verify(req, res);
     let { column, value } = req.query;
     let employees = {};
     let empInfo = {};
@@ -97,8 +93,10 @@ router.get('/enroll/:empNo?', async (req, res) => {
         }
     }
 
-    if (req.params.empNo) res.render("PJS/enroll", { employees, empInfo, date })
-    else res.render("PJS/enroll", { employees })
+    // if (req.params.empNo) res.render("PJS/empManage", { employees, empInfo, date })
+    // else res.render("PJS/empManage", { employees })
+    if (req.params.empNo) res.render("PJS/callTest", { employees, empInfo, date })
+    else res.render("PJS/callTest", { employees, empNo: myInfo.empNo })
 })
 
 router.post('/enroll', upload.single('picture'), async (req, res) => {
@@ -207,5 +205,7 @@ router.post('/changePwd', async (req, res) => {
         res.render('PJS/changePwd', { empNo, msg })
     }
 })
+
+router.post('/verify', verify)
 
 module.exports = router

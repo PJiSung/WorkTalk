@@ -20,15 +20,18 @@ expressApp.use(express.json());
 expressApp.set('view engine', 'ejs');
 expressApp.set('views', './src/view/ejs');
 expressApp.use('/hRManage', require('./routes/KYW/resourceMange.js'));
-expressApp.use('/emp', require('./routes/PJS/login.js'));
+expressApp.use('/emp', require('./routes/PJS/empManage.js'));
+expressApp.use('/chat', require('./routes/PJS/chat.js'));
 expressApp.use(express.static(__dirname + '/public'));
 expressApp.use(cors());
 expressApp.use('/static', express.static(path.join(__dirname, 'node_modules')));
 
 expressApp.get('/', function (req, res) {
+    //res.redirect('/emp/enroll')
     //res.redirect('/emp/changePwd/202405003') //888888
     //res.render('PJS/client') //화상
-    res.render('index')
+    res.render('PJS/test')
+    //res.render('index')
 })
 
 io.on('connection', (socket) => {

@@ -25,7 +25,7 @@ const createWindow = () => {
   //mainWindow.loadFile("view/index.html")
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   ipcMain.handle('show-dialog', async (event, options) => {
     const { type, title, message, buttons } = options;
     return await dialog.showMessageBox({ type, title, message, buttons });

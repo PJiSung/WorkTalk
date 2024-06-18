@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="room">
+    <input type="button" value="완" id="btn">
+    <br>
+    <hr>
+    <input type="text" id="callTo">
+    <input type="button" id="callBtn" value="걸기">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io()
+        const callToValue = document.getElementById("callTo");
+        console.log(socket)
+
+        document.getElementById('room').focus();
+
+        document.getElementById('room').addEventListener('keyup', (e) => {
+            if (e.key == 'Enter') location.href = '/chat/oneOnOne/' + document.getElementById('room').value;
+        })
+
+        document.getElementById("btn").addEventListener("click", () => {
+            location.href = '/chat/oneOnOne/' + document.getElementById('room').value;
+        })
+
+        document.getElementById('callBtn').addEventListener('click', () => {
+            const callTo = document.getElementById('callTo').value;
+            if (callTo) {
+                socket.emit('call', { to: callTo });
+            }
+        });
+
+        socket.on('call', (data) => {
+            console.log(`Incoming call from ${data.from}`);
+            location.href = '/chat/oneOnOne/' + data.from;
+        });
+
+    </script>
+</body>
+
+</html>

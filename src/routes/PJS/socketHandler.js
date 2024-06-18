@@ -75,12 +75,16 @@ const log = (socket) => {
     }
 }
 
-const handleMessage = (socket, message, room) => {
-    log(socket)('Client said : ', message);
-    if(message.type === 'offer' || message.type === 'answer' || message.type === 'candidate'){
-        socket.broadcast.to(room).emit('message', message);
+const handleMessage = (io, socket, message, room) => {
+    if(message.hasOwnProperty('chatRoomId')){
+        io.to(message.chatRoomId).emit('message', message);
     }else{
-        socket.broadcast.to(room).emit('message', {msg: message, userId: socket.id});    
+        log(socket)('Client said : ', message);
+        if(message.type === 'offer' || message.type === 'answer' || message.type === 'candidate'){
+            socket.broadcast.to(room).emit('message', message);
+        }else{
+            socket.broadcast.to(room).emit('message', {msg: message, userId: socket.id}); 
+        }
     }
 }
 
@@ -112,6 +116,10 @@ const handleConnection = (io, socket) => {
 
     socket.on('message', (message, room) => {
         handleMessage(socket, message, room);
+    });
+
+    socket.on('message', (message) => {
+        handleMessage(io, socket, message);//io추가
     });
 
     socket.on('create or join', (room) => {
